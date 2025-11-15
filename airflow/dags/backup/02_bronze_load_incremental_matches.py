@@ -10,7 +10,7 @@ import json
 TOURNAMENT_ID = 202  # Ekstraklasa
 
 def get_last_match_info(**context):
-    """Download last match date and season_id from bronze.full_matches_data"""
+    """Pobierz datę i season_id ostatniego meczu z bronze.full_matches_data"""
     print("📅 Checking last match info in bronze.full_matches_data...")
     
     hook = PostgresHook(postgres_conn_id='postgres_default')
@@ -32,8 +32,8 @@ def get_last_match_info(**context):
     
     if not result or not result[0]:
         error_msg = (
-            f"ERROR: No data for unique_tournament_id={TOURNAMENT_ID} in bronze.full_matches_data.\n"
-            f"   Action required: Load historical data first."
+            f"❌ BŁĄD: Brak danych dla unique_tournament_id={TOURNAMENT_ID} w bronze.full_matches_data.\n"
+            f"   Akcja wymagana: Najpierw załaduj dane historyczne."
         )
         print(error_msg)
         raise AirflowFailException(error_msg)
@@ -42,7 +42,7 @@ def get_last_match_info(**context):
     season_id = result[1]
     total_in_db = result[2]
     
-    print(f"Last match info:")
+    print(f"✅ Last match info:")
     print(f"  • Date: {last_date}")
     print(f"  • Season ID: {season_id}")
     print(f"  • Matches on that date: {total_in_db}")
@@ -51,7 +51,7 @@ def get_last_match_info(**context):
     try:
         datetime.strptime(last_date, '%Y-%m-%d')
     except ValueError as e:
-        error_msg = f"ERROR: Invalid date format: '{last_date}'. Details: {e}"
+        error_msg = f"❌ BŁĄD: Nieprawidłowy format daty: '{last_date}'. Szczegóły: {e}"
         print(error_msg)
         raise AirflowFailException(error_msg)
     
@@ -62,17 +62,17 @@ def get_last_match_info(**context):
     }
 
 def check_new_data_in_minio(**context):
-    """Check for new data in MinIO after the last date for a given season_id"""
+    """Sprawdź nowe dane w MinIO po ostatniej dacie dla danego season_id"""
     ti = context['ti']
     db_info = ti.xcom_pull(task_ids='get_last_info')
     last_date = db_info['last_date']
     season_id = db_info['season_id']
     
-    print(f"Looking for matches after {last_date} in season {season_id}...")
+    print(f"🔍 Looking for matches after {last_date} in season {season_id}...")
     
     # MinIO uses tournament_id (not unique_tournament_id) in path
     prefix = f'matches/tournament_id={TOURNAMENT_ID}/season_id={season_id}/'
-    print(f"MinIO prefix: '{prefix}'")
+    print(f"📂 MinIO prefix: '{prefix}'")
     
     cmd = f'''docker exec etl_worker python -c "
 from minio import Minio
@@ -147,12 +147,12 @@ print('RESULT:' + json.dumps(result))
         if line.startswith('RESULT:'):
             minio_data = json.loads(line.replace('RESULT:', ''))
             
-            print(f"\n Summary:")
+            print(f"\n📊 Summary:")
             print(f"  • Total files: {minio_data['total_files']}")
             print(f"  • New files after {last_date}: {minio_data['new_files']}")
             
             if minio_data['new_files'] == 0:
-                print("  • No matches to load")
+                print("  • ℹ️ Brak meczów do załadowania")
             else:
                 estimated = minio_data['new_files'] * 30
                 print(f"  • Estimated new records: ~{estimated}")
@@ -167,12 +167,12 @@ print('RESULT:' + json.dumps(result))
     raise Exception("No valid result from MinIO check")
 
 def load_incremental_data(**context):
-    """Loads only new matches from MinIO to raw_matches"""
+    """Ładuje tylko nowe mecze z MinIO do raw_matches"""
     ti = context['ti']
     minio_info = ti.xcom_pull(task_ids='check_new_data')
     
     if minio_info['new_files'] == 0:
-        print("No matches to load - skipping")
+        print("ℹ️ Brak meczów do załadowania - skipping")
         return {'processed': 0, 'message': 'no_new_data'}
     
     last_date = minio_info['last_date']
@@ -182,8 +182,8 @@ def load_incremental_data(**context):
     # MinIO uses tournament_id in path
     prefix = f'matches/tournament_id={TOURNAMENT_ID}/season_id={season_id}/'
     
-    print(f" Loading {new_files_count} new files (after {last_date})...")
-    print(f" Prefix: '{prefix}'")
+    print(f"🚀 Loading {new_files_count} new files (after {last_date})...")
+    print(f"📂 Prefix: '{prefix}'")
     
     script_content = f'''import json
 import psycopg2
@@ -297,7 +297,7 @@ SCRIPT_END' '''
                 matches_loaded = int(parts[1])
                 duplicates_skipped = int(parts[2])
                 
-                print(f"\n Load Complete:")
+                print(f"\n✅ Load Complete:")
                 print(f"  • Files: {files_processed}")
                 print(f"  • New matches: {matches_loaded}")
                 print(f"  • Duplicates: {duplicates_skipped}")
@@ -321,7 +321,7 @@ def trigger_dbt_incremental(**context):
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=600)
     
     if result.returncode != 0:
-        print(f" dbt stderr: {result.stderr}")
+        print(f"❌ dbt stderr: {result.stderr}")
         raise Exception("dbt incremental refresh failed")
     
     print("✅ dbt incremental refresh completed")
@@ -338,7 +338,7 @@ def trigger_dbt_incremental(**context):
     verify_result = subprocess.run(verify_cmd, shell=True, capture_output=True, text=True)
     
     if verify_result.returncode == 0:
-        print("\n Table stats after refresh:")
+        print("\n📊 Table stats after refresh:")
         print(verify_result.stdout)
     
     return "dbt_incremental_complete"

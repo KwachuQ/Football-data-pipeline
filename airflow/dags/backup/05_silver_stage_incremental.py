@@ -15,7 +15,7 @@ default_args = {
 }
 
 def get_max_timestamp(**context):
-    """Find maximum start_timestamp in staging"""
+    """Znajdź maksymalny start_timestamp w staging"""
     hook = PostgresHook(postgres_conn_id='postgres_default')
     
     table_exists = hook.get_first("""
@@ -27,17 +27,17 @@ def get_max_timestamp(**context):
     """)[0]
     
     if not table_exists:
-        print("Staging tables don't exist - will load ALL data")
+        print("⚠️  Staging tables don't exist - will load ALL data")
         max_timestamp = '1900-01-01 00:00:00'
     else:
         result = hook.get_first("SELECT COALESCE(MAX(start_timestamp), '1900-01-01 00:00:00'::timestamp) FROM silver.staging_matches")
         max_timestamp = result[0] if result else '1900-01-01 00:00:00'
-        print(f"Current max start_timestamp in staging: {max_timestamp}")
+        print(f"📊 Current max start_timestamp in staging: {max_timestamp}")
     
     context['ti'].xcom_push(key='max_timestamp', value=str(max_timestamp))
 
 def check_new_data(**context):
-    """Check how many new data are in Bronze"""
+    """Sprawdź ile nowych danych jest w Bronze"""
     hook = PostgresHook(postgres_conn_id='postgres_default')
     max_timestamp = context['ti'].xcom_pull(task_ids='get_max_timestamp', key='max_timestamp')
     
@@ -50,29 +50,29 @@ def check_new_data(**context):
                OR EXISTS (SELECT 1 FROM bronze.full_stats_data WHERE match_id = full_matches_data.match_id))
     """)[0]
     
-    print(f"\n New data to process:")
+    print(f"\n📊 New data to process:")
     print(f"   - Max staging timestamp: {max_timestamp}")
     print(f"   - New matches to insert: {new_matches}")
     
     if new_matches == 0:
-        print("\n No new data - staging is up to date!")
+        print("\n✅ No new data - staging is up to date!")
     
     context['ti'].xcom_push(key='new_matches_count', value=new_matches)
 
 def validate_incremental_load(**context):
-    """Validate loaded data"""
+    """Walidacja załadowanych danych"""
     hook = PostgresHook(postgres_conn_id='postgres_default')
     
     new_count = context['ti'].xcom_pull(task_ids='check_new_data', key='new_matches_count')
     
     if new_count == 0:
-        print("Skipping validation - no new data loaded")
+        print("⏭️  Skipping validation - no new data loaded")
         return
     
     staging_matches = hook.get_first("SELECT COUNT(*) FROM silver.staging_matches")[0]
     staging_stats = hook.get_first("SELECT COUNT(*) FROM silver.staging_stats")[0]
     
-    print(f"\n Load validation:")
+    print(f"\n📊 Load validation:")
     print(f"   - New matches inserted: {new_count}")
     print(f"   - Total staging matches: {staging_matches}")
     print(f"   - Total staging stats: {staging_stats}")
@@ -92,24 +92,24 @@ def validate_incremental_load(**context):
     for test_name, query in tests:
         result = hook.get_first(query)[0]
         if result > 0:
-            print(f"    {test_name}: FAILED ({result} records)")
+            print(f"   ❌ {test_name}: FAILED ({result} records)")
             all_passed = False
         else:
-            print(f"    {test_name}: PASSED")
+            print(f"   ✅ {test_name}: PASSED")
     
     if not all_passed:
-        raise ValueError(" Validation FAILED")
+        raise ValueError("❌ Validation FAILED")
     
-    print("\n All validations PASSED!")
+    print("\n✅ All validations PASSED!")
 
 def generate_incremental_report(**context):
-    """Incremental load report"""
+    """Raport inkrementalnego ładowania"""
     hook = PostgresHook(postgres_conn_id='postgres_default')
     max_timestamp = context['ti'].xcom_pull(task_ids='get_max_timestamp', key='max_timestamp')
     new_count = context['ti'].xcom_pull(task_ids='check_new_data', key='new_matches_count')
     
     if new_count == 0:
-        print(" No new data loaded - skipping report")
+        print("⏭️  No new data loaded - skipping report")
         return
     
     summary_df = hook.get_pandas_df(f"""
@@ -132,7 +132,7 @@ def generate_incremental_report(**context):
     """)
     
     print("\n" + "="*60)
-    print(" Incremental Load Summary")
+    print("📊 INCREMENTAL LOAD SUMMARY")
     print("="*60)
     print(summary_df.to_string(index=False))
     print("="*60)

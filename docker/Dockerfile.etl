@@ -1,32 +1,27 @@
 FROM python:3.11-slim
 
+WORKDIR /opt
+
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python packages for ETL
-RUN pip install --no-cache-dir \
-    numpy==1.24.3 \
-    pandas==2.0.3 \
-    psycopg2-binary==2.9.7 \
-    minio==7.2.16 \
-    requests==2.31.0 \
-    python-dotenv==1.0.0 \
-    sqlalchemy==2.0.0 \
-    tenacity==8.2.3 \
-    httpx==0.25.0 \
-    pydantic==2.5.0
+# Copy and install requirements
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt && \
+    rm /tmp/requirements.txt
 
-# Create ETL directories
-RUN mkdir -p /opt/etl/logs /opt/etl/data /opt/etl/scripts
+# Set Python path so 'etl' package is importable
+ENV PYTHONPATH=/opt:$PYTHONPATH
 
 # Create ETL user
-RUN useradd -m -s /bin/bash etl_user
-RUN chown -R etl_user:etl_user /opt/etl
+RUN useradd -m -s /bin/bash etl_user && \
+    mkdir -p /opt/etl && \
+    chown -R etl_user:etl_user /opt/etl
 
 USER etl_user
 
-WORKDIR /opt/etl
-
-CMD ["python", "smoke_test.py"]
+# Note: /opt/etl will be mounted via volume at runtime
+CMD ["tail", "-f", "/dev/null"]

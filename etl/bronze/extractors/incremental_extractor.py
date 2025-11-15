@@ -13,8 +13,8 @@ from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
 
 from minio import Minio
-from client import SofascoreClient
-from storage import BronzeStorageManager
+from etl.bronze.client import SofascoreClient
+from etl.bronze.storage import BronzeStorageManager
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +63,14 @@ class SofascoreIncrementalETL:
             secure=os.getenv('MINIO_SECURE', 'false').lower() == 'true'
         )
         self.storage = BronzeStorageManager(self.minio_client)
+    
+    def __enter__(self):
+        """Support sync context manager"""
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Clean up resources"""
+        return False
     
     async def __aenter__(self):
         """Support async context manager"""
@@ -335,7 +343,7 @@ class SofascoreIncrementalETL:
             f"after={last_match_date}"
         )
         
-        with SofascoreClient() as client:
+        async with SofascoreClient() as client:
             for page in range(max_pages):
                 results.pages_scanned += 1
                 
@@ -399,8 +407,8 @@ async def main():
     try:
         logger.info("=== Starting Incremental ETL Process ===")
         
-        with SofascoreIncrementalETL() as etl:
-            result = etl.extract_new_matches(
+        async with SofascoreIncrementalETL() as etl:
+            result = await etl.extract_new_matches(
                 tournament_id=EKSTRAKLASA_ID,
                 season_id=SEASON_2025_ID,
                 last_match_date=LAST_EXTRACTION_DATE,

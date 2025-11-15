@@ -88,30 +88,45 @@ services:
       context: .
       dockerfile: Dockerfile.etl
     container_name: etl_worker
+    restart: always
     environment:
-      - RAPIDAPI_KEY=${RAPIDAPI_KEY}
-      - RAPIDAPI_HOST=sofascore.p.rapidapi.com
-      - MINIO_ENDPOINT=minio:9000
-      - MINIO_ACCESS_KEY=minio
-      - MINIO_SECRET_KEY=minio123
-      - MINIO_SECURE=false
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_DB=dwh
-      - POSTGRES_USER=airflow
-      - POSTGRES_PASSWORD=airflow
-      - PYTHONPATH=/opt
+      # Database connection
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: dwh
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      # MinIO connection
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+      MINIO_SECURE: "false"
+      # RapidAPI configuration
+      RAPIDAPI_KEY: ${RAPIDAPI_KEY}
+      RAPIDAPI_HOST: ${RAPIDAPI_HOST:-sofascore.p.rapidapi.com}
+      # ETL configuration
+      ETL_LOG_LEVEL: INFO
+      ETL_BATCH_SIZE: 1000
     volumes:
-      - ../etl:/opt/etl:ro  # Read-only mount for security
+      - ../etl:/opt/etl
+      - etl_logs:/opt/etl/logs
     depends_on:
-      - minio
-      - postgres
-    restart: unless-stopped
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
     command: >
       bash -c '
-        echo "[INFO] ETL Worker started and ready"
-        tail -f /dev/null
+        echo "[INFO] ETL Worker started - running smoke tests..."
+        python /opt/etl/smoke_test.py &&
+        echo "[INFO] ETL Worker ready for processing"
+        sleep infinity
       '
+    healthcheck:
+      test: ["CMD", "python", "/opt/etl/health_check.py"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   x-airflow-common: &airflow-common
     build: .

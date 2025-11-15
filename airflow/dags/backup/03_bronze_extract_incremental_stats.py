@@ -11,12 +11,12 @@ import os
 TOURNAMENT_ID = 202  # Ekstraklasa
 
 def get_today_match_ids(**context):
-    """Download match_id of matches loaded today into bronze.raw_matches"""
-    print("Searching for matches loaded today...")
+    """Pobierz match_id meczów załadowanych dzisiaj do bronze.raw_matches"""
+    print("🔍 Szukam meczów załadowanych dzisiaj...")
     
     hook = PostgresHook(postgres_conn_id='postgres_default')
     
-    # Download matches from today's date (ingestion_timestamp)
+    # Pobierz mecze z dzisiejszej daty (ingestion_timestamp)
     query = f"""
         SELECT 
             match_id,
@@ -30,7 +30,7 @@ def get_today_match_ids(**context):
     results = hook.get_records(query)
     
     if not results:
-        print("No matches loaded today")
+        print("ℹ️ Brak meczów załadowanych dzisiaj")
         return {
             'match_ids': [],
             'count': 0,
@@ -39,12 +39,12 @@ def get_today_match_ids(**context):
     
     match_ids = [row[0] for row in results]
     
-    print(f"Found {len(match_ids)} matches loaded today:")
+    print(f"✅ Znaleziono {len(match_ids)} meczów załadowanych dzisiaj:")
     for i, row in enumerate(results[:10], 1):
         print(f"  {i}. match_id={row[0]}, loaded at {row[1]}")
     
     if len(results) > 10:
-        print(f"  ... and {len(results) - 10} more")
+        print(f"  ... i {len(results) - 10} więcej")
     
     return {
         'match_ids': match_ids,
@@ -53,12 +53,12 @@ def get_today_match_ids(**context):
     }
 
 def check_existing_statistics(**context):
-    """Check which matches already have statistics in bronze.raw_stats"""
+    """Sprawdź które mecze już mają statystyki w bronze.raw_stats"""
     ti = context['ti']
     matches_info = ti.xcom_pull(task_ids='get_today_matches')
     
     if matches_info['count'] == 0:
-        print("No matches to check")
+        print("ℹ️ Brak meczów do sprawdzenia")
         return {
             'missing_match_ids': [],
             'missing_count': 0,
@@ -67,11 +67,11 @@ def check_existing_statistics(**context):
     
     match_ids = matches_info['match_ids']
     
-    print(f"Checking which of the {len(match_ids)} matches already have statistics...")
+    print(f"🔍 Sprawdzam które z {len(match_ids)} meczów mają już statystyki...")
     
     hook = PostgresHook(postgres_conn_id='postgres_default')
     
-    # Check which match_id already have statistics
+    # Sprawdź które match_id już mają statystyki
     placeholders = ','.join(['%s'] * len(match_ids))
     query = f"""
         SELECT DISTINCT match_id
@@ -84,13 +84,13 @@ def check_existing_statistics(**context):
     
     missing_ids = [mid for mid in match_ids if mid not in existing_ids]
     
-    print(f"Summary:")
-    print(f"  • Matches from today: {len(match_ids)}")
-    print(f"  • Already have statistics: {len(existing_ids)}")
-    print(f"  • To fetch: {len(missing_ids)}")
+    print(f"📊 Podsumowanie:")
+    print(f"  • Mecze z dzisiaj: {len(match_ids)}")
+    print(f"  • Już mają statystyki: {len(existing_ids)}")
+    print(f"  • Do pobrania: {len(missing_ids)}")
     
     if missing_ids:
-        print(f"\n Match IDs to fetch (first 10):")
+        print(f"\n📋 Match IDs do pobrania (pierwsze 10):")
         for mid in missing_ids[:10]:
             print(f"  • {mid}")
     
@@ -101,12 +101,12 @@ def check_existing_statistics(**context):
     }
 
 def fetch_statistics(**context):
-    """Call the ETL script to fetch statistics"""
+    """Wywołaj skrypt ETL do pobrania statystyk"""
     ti = context['ti']
     check_info = ti.xcom_pull(task_ids='check_existing')
     
     if check_info['missing_count'] == 0:
-        print("All matches already have statistics - nothing to fetch")
+        print("✅ Wszystkie mecze już mają statystyki - nic do pobrania")
         return {
             'fetched': 0,
             'failed': 0,
@@ -116,23 +116,25 @@ def fetch_statistics(**context):
     
     missing_ids = check_info['missing_match_ids']
     
-    print(f"Starting to fetch statistics for {len(missing_ids)} matches...")
+    print(f"🚀 Rozpoczynam pobieranie statystyk dla {len(missing_ids)} meczów...")
     
-    # Get RAPIDAPI credentials from environment
+    # Pobierz RAPIDAPI credentials z environment
     rapidapi_key = os.getenv('RAPIDAPI_KEY', '')
     
     if not rapidapi_key:
         raise AirflowFailException(
-            "Missing RAPIDAPI_KEY in environment variables! "
-            "Set RAPIDAPI_KEY in docker-compose.yml"
+            "❌ Brak RAPIDAPI_KEY w zmiennych środowiskowych! "
+            "Ustaw RAPIDAPI_KEY w docker-compose.yml"
         )
     
-    # Pass match_ids as JSON
+    # Przekaż match_ids jako JSON
     match_ids_json = json.dumps(missing_ids)
     
     command = f"""docker exec etl_worker python -c "
+import sys
+sys.path.append('/opt/etl/scripts')
+from fetch_match_statistics import StatisticsFetcher
 import json
-from etl.bronze.extractors.statistics_extractor import StatisticsFetcher
 
 match_ids = {match_ids_json}
 
@@ -161,46 +163,46 @@ print('STATS_RESULT:' + json.dumps({{
         )
         
         if result.returncode != 0:
-            print(f"Error: {result.stderr}")
-            print(f"stdout: {result.stdout}")
+            print(f"⚠️ Błąd wykonania: {result.stderr}")
+            print(f"📋 stdout: {result.stdout}")
             raise AirflowFailException("ETL script failed")
         
-        print(f"Output:\n{result.stdout}")
+        print(f"📋 Output:\n{result.stdout}")
         
-        # Parse result
+        # Parsuj wynik
         for line in result.stdout.split('\n'):
             if line.startswith('STATS_RESULT:'):
                 stats_result = json.loads(line.replace('STATS_RESULT:', ''))
-                print(f"\nFetch results:")
-                print(f"  • Fetched: {stats_result['fetched']}")
-                print(f"  • Failed: {stats_result['failed']}")
-                print(f"  • Skipped: {stats_result['skipped']}")
-                print(f"  • Total: {stats_result['total']}")
+                print(f"\n✅ Wyniki pobierania:")
+                print(f"  • Pobrane: {stats_result['fetched']}")
+                print(f"  • Błędy: {stats_result['failed']}")
+                print(f"  • Pominięte: {stats_result['skipped']}")
+                print(f"  • Razem: {stats_result['total']}")
                 return stats_result
         
-        print("No STATS_RESULT: found in output")
+        print("⚠️ Brak wyniku STATS_RESULT: w output")
         raise AirflowFailException("No valid result from ETL script")
         
     except subprocess.TimeoutExpired:
-        print(f"Timeout - process took longer than 30 minutes")
+        print(f"⚠️ Timeout - proces trwał dłużej niż 30 minut")
         raise AirflowFailException("ETL script timeout")
     except Exception as e:
-        print(f"Error: {type(e).__name__}: {e}")
+        print(f"⚠️ Błąd: {type(e).__name__}: {e}")
         raise
 
 def load_to_raw_stats(**context):
-    """Load fetched statistics from MinIO to bronze.raw_stats"""
+    """Załaduj pobrane statystyki z MinIO do bronze.raw_stats"""
     ti = context['ti']
     fetch_result = ti.xcom_pull(task_ids='fetch_stats')
     
     if fetch_result.get('fetched', 0) == 0:
-        print("No new statistics to load")
+        print("ℹ️ Brak nowych statystyk do załadowania")
         return {'loaded': 0, 'message': 'no_data'}
     
-    print(f"Loading {fetch_result['fetched']} statistics from MinIO to PostgreSQL...")
+    print(f"📥 Ładowanie {fetch_result['fetched']} statystyk z MinIO do PostgreSQL...")
     
-    # Use existing DAG for loading
-    # Alternatively: direct load from MinIO
+    # Użyj istniejącego DAG do załadowania
+    # Alternatywnie: bezpośredni load z MinIO
     
     command = """docker exec etl_worker python -c "
 import json
@@ -217,30 +219,30 @@ try:
     batch_id = str(uuid.uuid4())[:8]
     today = datetime.now().strftime('%Y-%m-%d')
     
-    # Find files from today's date
+    # Znajdź pliki z dzisiejszej daty
     prefix = f'match_statistics/season_2025_26/date={today}/'
     
     objects = list(minio_client.list_objects('bronze', prefix=prefix, recursive=True))
     json_files = [obj for obj in objects if obj.object_name.endswith('.json')]
     
-    print(f'Found {len(json_files)} statistics files from today')
+    print(f'Znaleziono {len(json_files)} plików statystyk z dzisiaj')
     
     loaded = 0
     duplicates = 0
     
     for obj in json_files:
         try:
-            # Extract match_id from filename
+            # Wyciągnij match_id z nazwy pliku
             filename = obj.object_name.split('/')[-1]
             match_id = int(filename.replace('match_', '').replace('.json', ''))
             
-            # Check if already exists
+            # Sprawdź czy już istnieje
             pg_cur.execute('SELECT 1 FROM bronze.raw_stats WHERE match_id = %s LIMIT 1', (match_id,))
             if pg_cur.fetchone():
                 duplicates += 1
                 continue
             
-            # Fetch data
+            # Pobierz dane
             response = minio_client.get_object('bronze', obj.object_name)
             content = response.read().decode('utf-8')
             stats_data = json.loads(content)
@@ -283,7 +285,7 @@ except Exception as e:
     if result.returncode != 0:
         raise AirflowFailException(f"Load failed: {result.stderr}")
     
-    print(f"Load output:\n{result.stdout}")
+    print(f"📋 Load output:\n{result.stdout}")
     
     for line in result.stdout.split('\n'):
         if line.startswith('LOAD_RESULT:'):
@@ -291,9 +293,9 @@ except Exception as e:
             loaded = int(parts[0])
             duplicates = int(parts[1])
             
-            print(f"\nLoad complete:")
-            print(f"  • Loaded: {loaded}")
-            print(f"  • Duplicates: {duplicates}")
+            print(f"\n✅ Load complete:")
+            print(f"  • Załadowane: {loaded}")
+            print(f"  • Duplikaty: {duplicates}")
             
             return {'loaded': loaded, 'duplicates': duplicates}
         elif line.startswith('LOAD_ERROR:'):
@@ -302,12 +304,12 @@ except Exception as e:
     raise AirflowFailException("No valid result from load script")
 
 def verify_statistics(**context):
-    """Verify loaded statistics"""
-    print("Verifying loaded statistics...")
+    """Weryfikuj załadowane statystyki"""
+    print("🔍 Weryfikacja załadowanych statystyk...")
     
     hook = PostgresHook(postgres_conn_id='postgres_default')
     
-    # Check today's statistics
+    # Sprawdź dzisiejsze statystyki
     query = f"""
         SELECT 
             COUNT(*) as total_stats,
@@ -319,11 +321,11 @@ def verify_statistics(**context):
     
     result = hook.get_first(query)
     
-    print(f"Today's statistics:")
-    print(f"  • Records: {result[0]}")
-    print(f"  • Matches: {result[1]}")
+    print(f"✅ Statystyki z dzisiaj:")
+    print(f"  • Rekordów: {result[0]}")
+    print(f"  • Meczów: {result[1]}")
     
-    # Check coverage
+    # Sprawdź coverage
     coverage_query = f"""
         SELECT 
             COUNT(DISTINCT rm.match_id) as matches_today,
@@ -337,13 +339,13 @@ def verify_statistics(**context):
     
     coverage = hook.get_first(coverage_query)
     
-    print(f"\nCoverage of today's matches:")
-    print(f"  • Matches loaded today: {coverage[0]}")
-    print(f"  • With statistics: {coverage[1]}")
-    print(f"  • Missing statistics: {coverage[2]}")
+    print(f"\n📊 Coverage dzisiejszych meczów:")
+    print(f"  • Mecze załadowane dzisiaj: {coverage[0]}")
+    print(f"  • Z statystykami: {coverage[1]}")
+    print(f"  • Brakujące statystyki: {coverage[2]}")
     
     if coverage[2] > 0:
-        print(f"\n WARNING: {coverage[2]} matches still missing statistics!")
+        print(f"\n⚠️ UWAGA: {coverage[2]} meczów wciąż bez statystyk!")
     
     return {
         'total_stats': result[0],

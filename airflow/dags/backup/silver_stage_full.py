@@ -15,44 +15,44 @@ default_args = {
 }
 
 def check_bronze_data(**context):
-    """Check if data exists in bronze"""
+    """Sprawdź czy dane w bronze istnieją"""
     hook = PostgresHook(postgres_conn_id='postgres_default')
     
     matches_count = hook.get_first("SELECT COUNT(*) FROM bronze.full_matches_data")[0]
     stats_count = hook.get_first("SELECT COUNT(*) FROM bronze.full_stats_data")[0]
     
-    print(f"Bronze layer status:")
+    print(f"📊 Bronze layer status:")
     print(f"   - full_matches_data: {matches_count:,} records")
     print(f"   - full_stats_data: {stats_count:,} records")
     
     if matches_count == 0:
-        raise ValueError("bronze.full_matches_data is EMPTY!")
+        raise ValueError("⚠️  bronze.full_matches_data is EMPTY!")
     if stats_count == 0:
-        raise ValueError("bronze.full_stats_data is EMPTY!")
+        raise ValueError("⚠️  bronze.full_stats_data is EMPTY!")
     
     context['ti'].xcom_push(key='bronze_matches_count', value=matches_count)
     context['ti'].xcom_push(key='bronze_stats_count', value=stats_count)
 
 def validate_staging_data(**context):
-    """Validate staging data"""
+    """Walidacja danych staging"""
     hook = PostgresHook(postgres_conn_id='postgres_default')
     
-    # Get counts from previous step
+    # Pobierz liczby z poprzedniego kroku
     bronze_matches = context['ti'].xcom_pull(task_ids='check_bronze_data', key='bronze_matches_count')
     
-    # Check staging
+    # Sprawdź staging
     staging_matches = hook.get_first("SELECT COUNT(*) FROM silver.staging_matches")[0]
     staging_stats = hook.get_first("SELECT COUNT(*) FROM silver.staging_stats")[0]
     
-    print(f"\nStaging validation:")
+    print(f"\n📊 Staging validation:")
     print(f"   - Bronze matches: {bronze_matches:,}")
     print(f"   - Staging matches: {staging_matches:,}")
     print(f"   - Staging stats: {staging_stats:,}")
     
     if staging_matches == 0:
-        raise ValueError("staging_matches is EMPTY after insert!")
+        raise ValueError("❌ staging_matches is EMPTY after insert!")
     
-    # Validation tests
+    # Testy walidacyjne
     tests = [
         ("NULL in key columns", "SELECT COUNT(*) FROM silver.staging_matches WHERE match_id IS NULL OR home_team_id IS NULL OR away_team_id IS NULL"),
         ("Excluded matches", "SELECT COUNT(*) FROM silver.staging_matches WHERE status_type IN ('postponed', 'cancelled', 'retired')"),
@@ -62,16 +62,16 @@ def validate_staging_data(**context):
     for test_name, query in tests:
         result = hook.get_first(query)[0]
         if result > 0:
-            raise ValueError(f"Validation failed: {test_name} ({result} records)")
-        print(f"   PASSED {test_name}")
+            raise ValueError(f"❌ Validation failed: {test_name} ({result} records)")
+        print(f"   ✅ {test_name}: PASSED")
     
-    print("\nAll validations PASSED!")
+    print("\n✅ All validations PASSED!")
 
 def generate_report(**context):
-    """Final report"""
+    """Raport końcowy"""
     hook = PostgresHook(postgres_conn_id='postgres_default')
     
-    # Summary
+    # Podsumowanie
     summary_df = hook.get_pandas_df("""
         SELECT 
             'Staging Matches' as table_name,
@@ -94,11 +94,11 @@ def generate_report(**context):
     """)
     
     print("\n" + "="*60)
-    print("STAGING LAYER SUMMARY")
+    print("📊 STAGING LAYER SUMMARY")
     print("="*60)
     print(summary_df.to_string(index=False))
     
-    # Statistics groups
+    # Grupy statystyk
     groups_df = hook.get_pandas_df("""
         SELECT group_name, COUNT(*) as records 
         FROM silver.staging_stats 
@@ -106,7 +106,7 @@ def generate_report(**context):
         ORDER BY records DESC
     """)
     
-    print("\nStatistics by group:")
+    print("\n📈 Statistics by group:")
     print(groups_df.to_string(index=False))
     print("="*60)
 

@@ -13,8 +13,8 @@ from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
 
 from minio import Minio
-from client import SofascoreClient
-from storage import BronzeStorageManager
+from etl.bronze.client import SofascoreClient
+from etl.bronze.storage import BronzeStorageManager
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +57,14 @@ class SofascoreETL:
             secure=os.getenv('MINIO_SECURE', 'false').lower() == 'true'
         )
         self.storage = BronzeStorageManager(self.minio_client)
+    
+    def __enter__(self):
+        """Support sync context manager"""
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Clean up resources"""
+        return False
     
     async def __aenter__(self):
         """Support async context manager"""

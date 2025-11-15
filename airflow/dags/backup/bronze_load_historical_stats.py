@@ -96,18 +96,18 @@ def load_all_stats(**context):
                 if "error" in stats_data:
                     error_files += 1
                     if error_files <= 5:  # Log first 5 errors
-                        logging.warning(f"Skipping error file {obj_key}: {stats_data.get('error', {}).get('message', 'Unknown error')}")
+                        logging.warning(f"⚠️ Skipping error file {obj_key}: {stats_data.get('error', {}).get('message', 'Unknown error')}")
                     elif error_files == 6:
-                        logging.warning(f"Found many error files, suppressing further error logs...")
+                        logging.warning(f"⚠️ Found many error files, suppressing further error logs...")
                     continue
                 
                 # Check if file contains valid statistics data
                 if not stats_data.get("statistics") or not isinstance(stats_data.get("statistics"), list):
                     invalid_files += 1
                     if invalid_files <= 5:  # Log first 5 invalid files
-                        logging.warning(f"Skipping invalid file {obj_key}: missing or invalid statistics data")
+                        logging.warning(f"⚠️ Skipping invalid file {obj_key}: missing or invalid statistics data")
                     elif invalid_files == 6:
-                        logging.warning(f"Found many invalid files, suppressing further invalid logs...")
+                        logging.warning(f"⚠️ Found many invalid files, suppressing further invalid logs...")
                     continue
                 
                 # Validate that statistics contains actual data
@@ -128,14 +128,14 @@ def load_all_stats(**context):
                 if not has_valid_stats:
                     invalid_files += 1
                     if invalid_files <= 5:
-                        logging.warning(f"Skipping file with empty statistics {obj_key}")
+                        logging.warning(f"⚠️ Skipping file with empty statistics {obj_key}")
                     continue
                 
                 # Only process if we have a valid match_id from filename
                 if not match_id:
                     invalid_files += 1
                     if invalid_files <= 5:
-                        logging.warning(f"Skipping file without match_id in filename {obj_key}")
+                        logging.warning(f"⚠️ Skipping file without match_id in filename {obj_key}")
                     continue
                 
                 # Insert into PostgreSQL with consistent column names
@@ -160,28 +160,28 @@ def load_all_stats(**context):
                 
                 # Log progress every 100 successful loads
                 if successful_loads % 100 == 0:
-                    logging.info(f"Progress: {successful_loads} valid files loaded, {error_files} errors, {invalid_files} invalid skipped")
+                    logging.info(f"✅ Progress: {successful_loads} valid files loaded, {error_files} errors, {invalid_files} invalid skipped")
                 elif successful_loads <= 5:  # Log first 5 successful loads
-                    logging.info(f"Loaded {obj_key} (season_id: {season_id}, match_id: {match_id})")
+                    logging.info(f"✅ Loaded {obj_key} (season_id: {season_id}, match_id: {match_id})")
                 
             except json.JSONDecodeError as e:
                 invalid_files += 1
                 if invalid_files <= 5:
-                    logging.error(f"JSON decode error in {obj_key}: {str(e)}")
+                    logging.error(f"❌ JSON decode error in {obj_key}: {str(e)}")
                 continue
             except Exception as e:
                 invalid_files += 1
                 if invalid_files <= 5:
-                    logging.error(f"Failed to load {obj_key}: {str(e)}")
+                    logging.error(f"❌ Failed to load {obj_key}: {str(e)}")
                 continue
     
     # Final summary
-    logging.info(f"Processing complete!")
-    logging.info(f"  Total files processed: {total_files}")
-    logging.info(f"  Valid statistics loaded: {successful_loads}")
-    logging.info(f"  Error files skipped: {error_files}")
-    logging.info(f"  Invalid files skipped: {invalid_files}")
-    logging.info(f"  Batch ID: {batch_id}")
+    logging.info(f"🎉 Processing complete!")
+    logging.info(f"  📊 Total files processed: {total_files}")
+    logging.info(f"  ✅ Valid statistics loaded: {successful_loads}")
+    logging.info(f"  ⚠️ Error files skipped: {error_files}")
+    logging.info(f"  ❌ Invalid files skipped: {invalid_files}")
+    logging.info(f"  🏷️ Batch ID: {batch_id}")
     
     # Verify loaded data
     if successful_loads > 0:
@@ -196,12 +196,12 @@ def load_all_stats(**context):
         """
         
         result = postgres_hook.get_first(verify_sql)
-        logging.info(f"Database verification: {result}")
+        logging.info(f"📊 Database verification: {result}")
         
         # Show sample of loaded data
         sample_sql = "SELECT season_id, match_id, file_path FROM bronze.raw_stats ORDER BY id LIMIT 3;"
         sample_results = postgres_hook.get_records(sample_sql)
-        logging.info("Sample loaded records:")
+        logging.info("📋 Sample loaded records:")
         for row in sample_results:
             logging.info(f"  Season ID: {row[0]}, Match ID: {row[1]}, File: {row[2]}")
     
@@ -220,7 +220,7 @@ def verify_stats_data(**context):
     # Get load results from previous task
     load_results = context['ti'].xcom_pull(task_ids='load_all_statistics')
     
-    logging.info("Verifying loaded statistics data:")
+    logging.info("🔍 Verifying loaded statistics data:")
     logging.info(f"Load Summary: {load_results}")
     
     verification_queries = [
@@ -295,7 +295,7 @@ def verify_stats_data(**context):
     
     quality_result = postgres_hook.get_first(quality_check_sql)
     if quality_result:
-        logging.info(f"Data Quality Check:")
+        logging.info(f"📊 Data Quality Check:")
         logging.info(f"  Total records: {quality_result[0]}")
         logging.info(f"  With match_id: {quality_result[1]} ({quality_result[1]/quality_result[0]*100:.1f}%)")
         logging.info(f"  With tournament_id: {quality_result[2]} ({quality_result[2]/quality_result[0]*100:.1f}%)")

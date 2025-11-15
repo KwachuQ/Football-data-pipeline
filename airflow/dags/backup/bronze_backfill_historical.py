@@ -11,29 +11,31 @@ from typing import Dict, List, Any
 
 def run_diagnostic_analysis(**context):
     """
-    Runs diagnostic analysis in the etl_worker container
-    Returns a list of missing and incomplete seasons
+    Uruchamia analizę diagnostyczną w kontenerze etl_worker
+    Zwraca listę brakujących i niekompletnych sezonów
     """
-    print("Running diagnostic analysis of seasons...")
+    print("🔍 Uruchamianie analizy diagnostycznej sezonów...")
     
-    # Command to run diagnostics in etl_worker
+    # Komenda do uruchomienia diagnostyki w etl_worker
     command = """
     docker exec etl_worker python -c "
+import sys
+sys.path.append('/opt/etl/scripts')
 import asyncio
 import json
-from etl.bronze.diagnostics.season_diagnostic import EkstraklasaSeasonDiagnostic
+from diagnose_seasons import EkstraklasaSeasonDiagnostic
 
 async def run_diagnostic():
     diagnostic = EkstraklasaSeasonDiagnostic()
     report = await diagnostic.generate_comprehensive_report()
     
-    # Return only needed lists
+    # Zwróć tylko potrzebne listy
     result = {
         'missing_seasons': report['missing_seasons'],
         'incomplete_seasons': report['incomplete_seasons'],
         'complete_seasons': report['complete_seasons'],
-        'total_api_seasons': len(report['season_analysis']),
-        'total_bronze_seasons': len([s for s in report['season_analysis'].values() if s['in_bronze']])
+        'total_api_seasons': len(report['api_summary']['seasons']),
+        'total_bronze_seasons': len(report['bronze_summary']['season_ids'])
     }
     
     print('DIAGNOSTIC_RESULT:' + json.dumps(result))
@@ -64,44 +66,51 @@ asyncio.run(run_diagnostic())
         
         diagnostic_result = json.loads(diagnostic_line)
         
-        print(f"Diagnostic Results:")
-        print(f"  • Missing seasons: {len(diagnostic_result['missing_seasons'])}")
-        print(f"  • Incomplete seasons: {len(diagnostic_result['incomplete_seasons'])}")
-        print(f"  • Complete seasons: {len(diagnostic_result['complete_seasons'])}")
-        print(f"  • Total API seasons: {diagnostic_result['total_api_seasons']}")
-        print(f"  • Total Bronze seasons: {diagnostic_result['total_bronze_seasons']}")
+        print(f"📊 Wyniki diagnostyki:")
+        print(f"  • Brakujące sezony: {len(diagnostic_result['missing_seasons'])}")
+        print(f"  • Niekompletne sezony: {len(diagnostic_result['incomplete_seasons'])}")
+        print(f"  • Kompletne sezony: {len(diagnostic_result['complete_seasons'])}")
+        print(f"  • Total API sezony: {diagnostic_result['total_api_seasons']}")
+        print(f"  • Total Bronze sezony: {diagnostic_result['total_bronze_seasons']}")
         
         return diagnostic_result
         
     except Exception as e:
-        print(f"Error during diagnostics: {e}")
+        print(f"❌ Błąd podczas diagnostyki: {e}")
         raise
 
 def load_checkpoint(**context):
     """
-    Loads checkpoint from MinIO or creates a new one
+    Ładuje checkpoint z MinIO lub tworzy nowy
     """
-    print("Loading checkpoint...")
+    print("📂 Ładowanie checkpoint...")
     
     command = """
     docker exec etl_worker python -c "
+import sys
+sys.path.append('/opt/etl/scripts')
 import json
 import os
+from minio import Minio
 from datetime import datetime
-from etl.bronze.client import get_minio_client
 
-# Initialize MinIO client
-minio_client = get_minio_client()
+# Inicjalizuj MinIO client
+minio_client = Minio(
+    endpoint=os.getenv('MINIO_ENDPOINT', 'minio:9000'),
+    access_key=os.getenv('MINIO_ACCESS_KEY', 'minio'),
+    secret_key=os.getenv('MINIO_SECRET_KEY', 'minio123'),
+    secure=os.getenv('MINIO_SECURE', 'false').lower() == 'true'
+)
 
 checkpoint_key = 'checkpoints/ekstraklasa_backfill_progress.json'
 
 try:
-    # Try to load existing checkpoint
+    # Spróbuj załadować istniejący checkpoint
     response = minio_client.get_object('bronze', checkpoint_key)
     checkpoint = json.loads(response.read().decode('utf-8'))
     print('CHECKPOINT_LOADED:' + json.dumps(checkpoint))
 except Exception as e:
-    # Create new checkpoint
+    # Utwórz nowy checkpoint
     checkpoint = {
         'created_at': datetime.utcnow().isoformat(),
         'last_updated': datetime.utcnow().isoformat(),
@@ -118,34 +127,34 @@ except Exception as e:
         result = subprocess.run(command, shell=True, capture_output=True, text=True)
         
         if result.returncode != 0:
-            raise Exception(f"Error loading checkpoint: {result.stderr}")
+            raise Exception(f"Błąd ładowania checkpoint: {result.stderr}")
         
-        # Extract checkpoint from output
+        # Wyciągnij checkpoint z output
         output_lines = result.stdout.strip().split('\n')
         checkpoint = None
         
         for line in output_lines:
             if line.startswith('CHECKPOINT_LOADED:'):
                 checkpoint = json.loads(line.replace('CHECKPOINT_LOADED:', ''))
-                print("Loaded existing checkpoint")
+                print("✅ Załadowano istniejący checkpoint")
                 break
             elif line.startswith('CHECKPOINT_NEW:'):
                 checkpoint = json.loads(line.replace('CHECKPOINT_NEW:', ''))
-                print("Created new checkpoint")
+                print("🆕 Utworzono nowy checkpoint")
                 break
         
         if not checkpoint:
-            raise Exception("Failed to load or create checkpoint")
+            raise Exception("Nie udało się załadować ani utworzyć checkpoint")
         
         return checkpoint
         
     except Exception as e:
-        print(f"Checkpoint error: {e}")
+        print(f"❌ Błąd checkpoint: {e}")
         raise
 
 def save_checkpoint(checkpoint_data: Dict[str, Any]):
     """
-    Saves checkpoint to MinIO
+    Zapisuje checkpoint do MinIO
     """
     # Serialize JSON properly
     checkpoint_json = json.dumps(checkpoint_data, indent=None)
@@ -155,14 +164,21 @@ def save_checkpoint(checkpoint_data: Dict[str, Any]):
     
     command = f"""
     docker exec etl_worker python -c "
+import sys
+sys.path.append('/opt/etl/scripts')
 import json
 import os
+from minio import Minio
 from datetime import datetime
 from io import BytesIO
-from etl.bronze.client import get_minio_client
 
 # Inicjalizuj MinIO client
-minio_client = get_minio_client()
+minio_client = Minio(
+    endpoint=os.getenv('MINIO_ENDPOINT', 'minio:9000'),
+    access_key=os.getenv('MINIO_ACCESS_KEY', 'minio'),
+    secret_key=os.getenv('MINIO_SECRET_KEY', 'minio123'),
+    secure=os.getenv('MINIO_SECURE', 'false').lower() == 'true'
+)
 
 # Parse checkpoint data from JSON string
 checkpoint_json = '{checkpoint_json_escaped}'
@@ -190,41 +206,41 @@ except Exception as e:
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     
     if result.returncode != 0 or 'CHECKPOINT_SAVED:ERROR' in result.stdout:
-        raise Exception(f"Error saving checkpoint: {result.stderr}")
+        raise Exception(f"Błąd zapisywania checkpoint: {result.stderr}")
     
-    print("Checkpoint saved")
+    print("💾 Checkpoint zapisany")
 
 def calculate_seasons_to_process(**context):
     """
-    Calculates which seasons need to be processed based on diagnostics and checkpoint
+    Oblicza które sezony należy przetworzyć na podstawie diagnostyki i checkpoint
     """
-    # Retrieve data from previous tasks
+    # Pobierz dane z poprzednich tasków
     diagnostic_result = context['ti'].xcom_pull(task_ids='run_diagnostic')
     checkpoint = context['ti'].xcom_pull(task_ids='load_checkpoint')
     
-    # Combine missing and incomplete seasons
+    # Połącz missing i incomplete seasons
     all_needed_seasons = diagnostic_result['missing_seasons'] + diagnostic_result['incomplete_seasons']
     
-    # Remove already completed seasons from checkpoint
+    # Usuń już ukończone sezony z checkpoint
     completed_seasons = set(checkpoint.get('completed_seasons', []))
     failed_seasons = set(checkpoint.get('failed_seasons', []))
     
-    # Filter seasons to process
+    # Filtruj sezony do przetworzenia
     seasons_to_process = [
         season_id for season_id in all_needed_seasons 
         if season_id not in completed_seasons and season_id not in failed_seasons
     ]
     
-    # If there is a season in progress, start with it
+    # Jeśli jest sezon w trakcie, rozpocznij od niego
     in_progress = checkpoint.get('in_progress_season')
     if in_progress and in_progress not in completed_seasons:
         if in_progress in seasons_to_process:
             seasons_to_process.remove(in_progress)
         seasons_to_process.insert(0, in_progress)
     
-    print(f"Seasons to process: {seasons_to_process}")
-    print(f"Already completed: {list(completed_seasons)}")
-    print(f"Failed: {list(failed_seasons)}")
+    print(f"🎯 Sezony do przetworzenia: {seasons_to_process}")
+    print(f"📋 Już ukończone: {list(completed_seasons)}")
+    print(f"❌ Nieudane: {list(failed_seasons)}")
     
     return {
         'seasons_to_process': seasons_to_process,
@@ -235,29 +251,30 @@ def calculate_seasons_to_process(**context):
 
 def extract_season_with_retry(season_id: int, tournament_id: int = 202, max_retries: int = 3) -> bool:
     """
-    Extracts a season with retry logic
-    Returns True if successful, False if failed
+    Ekstraktuje sezon z retry logic
+    Zwraca True jeśli sukces, False jeśli niepowodzenie
     """
     for attempt in range(1, max_retries + 1):
         try:
-            print(f"Attempt {attempt}/{max_retries} for season_id: {season_id}")
+            print(f"🔄 Próba {attempt}/{max_retries} dla season_id: {season_id}")
             
             # Escape the Python code properly
             command = f"""
             docker exec etl_worker python -c "
+import sys
+sys.path.append('/opt/etl/scripts')
+from sofascore_etl import SofascoreETL
 import asyncio
-import json
-from etl.bronze.extractors.base_extractor import SofascoreETL
 
 async def run():
     try:
-        async with SofascoreETL() as etl:
-            result = await etl.extract_tournament_matches(
-                tournament_id={tournament_id}, 
-                season_id={season_id}, 
-                max_pages=25,
-                replace_partition=False
-            )
+        etl = SofascoreETL()
+        result = await etl.extract_tournament_matches(
+            tournament_id={tournament_id}, 
+            season_id={season_id}, 
+            max_pages=25,
+            replace_partition=False
+        )
         
         # Extract total_matches from result
         total_matches = result.get('total_matches', 0)
@@ -275,49 +292,49 @@ asyncio.run(run())
             result = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=600)
             
             if result.returncode == 0 and 'EXTRACTION_SUCCESS:' in result.stdout:
-                # Extract the number of matches
+                # Wyciągnij liczbę meczów
                 for line in result.stdout.split('\n'):
                     if line.startswith('EXTRACTION_SUCCESS:'):
                         match_count = line.replace('EXTRACTION_SUCCESS:', '')
-                        print(f"Success for season_id {season_id}: {match_count} matches")
+                        print(f"✅ Sukces dla season_id {season_id}: {match_count} meczów")
                         return True
                 
-                print(f"Success for season_id {season_id}")
+                print(f"✅ Sukces dla season_id {season_id}")
                 return True
             else:
-                print(f"Attempt {attempt} failed: {result.stderr}")
+                print(f"❌ Niepowodzenie próby {attempt}: {result.stderr}")
                 if result.stdout:
                     print(f"STDOUT: {result.stdout}")
                 
         except subprocess.TimeoutExpired:
-            print(f"Timeout attempt {attempt} for season_id {season_id}")
+            print(f"⏱️ Timeout próby {attempt} dla season_id {season_id}")
         except Exception as e:
-            print(f"Attempt {attempt} error: {e}")
+            print(f"❌ Błąd próby {attempt}: {e}")
         
-        # Delay before next attempt
+        # Opóźnienie przed kolejną próbą
         if attempt < max_retries:
             delay = attempt * 30  # 30s, 60s, 90s
-            print(f"Waiting {delay}s before next attempt...")
+            print(f"⏳ Oczekiwanie {delay}s przed kolejną próbą...")
             time.sleep(delay)
     
-    print(f"All attempts failed for season_id {season_id}")
+    print(f"❌ Wszystkie próby nieudane dla season_id {season_id}")
     return False
 
 def process_seasons_smart(**context):
     """
-    Smart processing of seasons with checkpoint and retry
+    Inteligentne przetwarzanie sezonów z checkpoint i retry
     """
-    # Retrieve data from previous tasks
+    # Pobierz dane z poprzednich tasków
     processing_plan = context['ti'].xcom_pull(task_ids='calculate_seasons')
     checkpoint = context['ti'].xcom_pull(task_ids='load_checkpoint')
     
     seasons_to_process = processing_plan['seasons_to_process']
     
     if not seasons_to_process:
-        print("All seasons have already been processed!")
+        print("🎉 Wszystkie sezony już przetworzone!")
         return
     
-    print(f"Starting processing of {len(seasons_to_process)} seasons")
+    print(f"🚀 Rozpoczynam przetwarzanie {len(seasons_to_process)} sezonów")
     
     # Aktualizuj checkpoint
     checkpoint['status'] = 'processing'
@@ -326,49 +343,49 @@ def process_seasons_smart(**context):
     
     for season_id in seasons_to_process:
         try:
-            print(f"\n Processing season_id: {season_id} ({processed_count + 1}/{len(seasons_to_process)})")
+            print(f"\n📅 Przetwarzanie season_id: {season_id} ({processed_count + 1}/{len(seasons_to_process)})")
             
-            # Mark as in progress
+            # Oznacz jako w trakcie
             checkpoint['in_progress_season'] = season_id
             save_checkpoint(checkpoint)
             
-            # Extract with retry
+            # Ekstraktuj z retry
             success = extract_season_with_retry(season_id)
             
             if success:
-                # Add to completed
+                # Dodaj do ukończonych
                 if 'completed_seasons' not in checkpoint:
                     checkpoint['completed_seasons'] = []
                 checkpoint['completed_seasons'].append(season_id)
                 
-                # Remove from failed if present
+                # Usuń z nieudanych jeśli był tam
                 if 'failed_seasons' in checkpoint and season_id in checkpoint['failed_seasons']:
                     checkpoint['failed_seasons'].remove(season_id)
                 
                 processed_count += 1
-                print(f"Season {season_id} completed ({processed_count}/{len(seasons_to_process)})")
+                print(f"✅ Season {season_id} ukończony ({processed_count}/{len(seasons_to_process)})")
                 
             else:
-                # Add to failed
+                # Dodaj do nieudanych
                 if 'failed_seasons' not in checkpoint:
                     checkpoint['failed_seasons'] = []
                 if season_id not in checkpoint['failed_seasons']:
                     checkpoint['failed_seasons'].append(season_id)
                 
-                print(f"Season {season_id} failed")
+                print(f"❌ Season {season_id} nieudany")
             
-            # Clear in_progress
+            # Wyczyść in_progress
             checkpoint['in_progress_season'] = None
             save_checkpoint(checkpoint)
             
-            # Delay between seasons (rate limiting)
-            print("Delay 5s between seasons...")
+            # Opóźnienie między sezonami (rate limiting)
+            print("⏳ Opóźnienie 5s między sezonami...")
             time.sleep(5)
             
         except Exception as e:
-            print(f"Critical error for season_id {season_id}: {e}")
+            print(f"❌ Krytyczny błąd dla season_id {season_id}: {e}")
             
-            # Add to failed
+            # Dodaj do nieudanych
             if 'failed_seasons' not in checkpoint:
                 checkpoint['failed_seasons'] = []
             if season_id not in checkpoint['failed_seasons']:
@@ -377,17 +394,18 @@ def process_seasons_smart(**context):
             checkpoint['in_progress_season'] = None
             save_checkpoint(checkpoint)
             
-            # Continue with next season
+            # Kontynuuj z kolejnym sezonem
             continue
     
-    # Finalize checkpoint
+    # Finalizuj checkpoint
     checkpoint['status'] = 'completed'
     checkpoint['completed_at'] = datetime.utcnow().isoformat()
     save_checkpoint(checkpoint)
     
-    print(f"\n Processing completed!")
-    print(f"Processed: {processed_count}/{len(seasons_to_process)}")
-    print(f"Failed: {len(checkpoint.get('failed_seasons', []))}")
+    print(f"\n🎉 Przetwarzanie zakończone!")
+    print(f"✅ Przetworzone: {processed_count}/{len(seasons_to_process)}")
+    print(f"❌ Nieudane: {len(checkpoint.get('failed_seasons', []))}")
+
 # DAG configuration
 default_args = {
     'owner': 'airflow',
@@ -436,7 +454,7 @@ process_task = PythonOperator(
     task_id='process_seasons',
     python_callable=process_seasons_smart,
     dag=dag,
-    execution_timeout=timedelta(hours=6)  # Increased timeout for long processing
+    execution_timeout=timedelta(hours=6)  # Zwiększony timeout dla długiego przetwarzania
 )
 
 end_task = EmptyOperator(

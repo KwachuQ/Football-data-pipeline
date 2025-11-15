@@ -10,8 +10,8 @@ import json
 TOURNAMENT_ID = 202  # Ekstraklasa
 
 def get_last_loaded_match_ids(**context):
-    """Download match_id of matches that already have statistics in raw_stats"""
-    print("Checking existing statistics in bronze.raw_stats...")
+    """Pobierz match_id meczów, które już mają statystyki w raw_stats"""
+    print("📅 Checking existing statistics in bronze.raw_stats...")
     
     hook = PostgresHook(postgres_conn_id='postgres_default')
     
@@ -30,17 +30,17 @@ def get_last_loaded_match_ids(**context):
     result = hook.get_records(query)
     
     if result:
-        print(f"Found {len(result)} matches with statistics (showing last 10)")
+        print(f"✅ Found {len(result)} matches with statistics (showing last 10)")
         for row in result[:5]:
             print(f"  • match_id: {row[0]}, stats: {row[1]}")
     else:
-        print("No statistics found in database - will load all available")
+        print("⚠️ No statistics found in database - will load all available")
     
     # Get total count
     count_query = f"SELECT COUNT(DISTINCT match_id) FROM bronze.raw_stats WHERE tournament_id = {TOURNAMENT_ID}"
     total = hook.get_first(count_query)[0]
     
-    print(f"Total Ekstraklasa matches with statistics: {total}")
+    print(f"📊 Total Ekstraklasa matches with statistics: {total}")
     
     # Get all existing match_ids for filtering
     all_ids_query = f"SELECT DISTINCT match_id FROM bronze.raw_stats WHERE tournament_id = {TOURNAMENT_ID}"
@@ -52,8 +52,8 @@ def get_last_loaded_match_ids(**context):
     }
 
 def get_matches_needing_statistics(**context):
-    """Download match_id of matches from full_matches_data that do not have statistics"""
-    print("Finding matches that need statistics...")
+    """Pobierz match_id meczów z full_matches_data, które nie mają statystyk"""
+    print("🔍 Finding matches that need statistics...")
     
     ti = context['ti']
     stats_info = ti.xcom_pull(task_ids='get_existing_stats')
@@ -76,8 +76,8 @@ def get_matches_needing_statistics(**context):
     
     all_matches = hook.get_records(query)
     
-    print(f"Total finished Ekstraklasa matches: {len(all_matches)}")
-    print(f"Matches already with statistics: {len(existing_ids)}")
+    print(f"📊 Total finished Ekstraklasa matches: {len(all_matches)}")
+    print(f"📊 Matches already with statistics: {len(existing_ids)}")
     
     # Filter out matches that already have statistics
     missing_matches = [
@@ -86,7 +86,7 @@ def get_matches_needing_statistics(**context):
         if row[0] not in existing_ids
     ]
     
-    print(f"Matches needing statistics: {len(missing_matches)}")
+    print(f"📊 Matches needing statistics: {len(missing_matches)}")
     
     if missing_matches:
         print("Sample matches needing stats:")
@@ -99,20 +99,20 @@ def get_matches_needing_statistics(**context):
     }
 
 def check_statistics_in_minio(**context):
-    """Check available statistics in MinIO for missing matches"""
+    """Sprawdź dostępne statystyki w MinIO dla brakujących meczów"""
     ti = context['ti']
     matches_info = ti.xcom_pull(task_ids='get_missing_matches')
     missing_matches = matches_info['missing_matches']
     
     if not missing_matches:
-        print("All matches already have statistics")
+        print("✅ All matches already have statistics")
         return {
             'available_files': [],
             'available_count': 0,
             'season_folders': []
         }
     
-    print(f"Checking MinIO for statistics of {len(missing_matches)} matches...")
+    print(f"🔍 Checking MinIO for statistics of {len(missing_matches)} matches...")
     
     # Get match_ids to check
     match_ids_str = ','.join([str(m['match_id']) for m in missing_matches])
@@ -180,7 +180,7 @@ print('RESULT:' + json.dumps(result))
     if result.returncode != 0:
         raise Exception(f"MinIO check failed: {result.stderr}")
     
-    print("\nMinIO Output:")
+    print("\n📋 MinIO Output:")
     print(result.stdout)
     
     # Parse result
@@ -188,33 +188,33 @@ print('RESULT:' + json.dumps(result))
         if line.startswith('RESULT:'):
             minio_data = json.loads(line.replace('RESULT:', ''))
             
-            print(f"\n Summary:")
+            print(f"\n📊 Summary:")
             print(f"  • Matches needing stats: {minio_data['total_needed']}")
             print(f"  • Statistics available in MinIO: {minio_data['available_count']}")
             print(f"  • Season folders: {', '.join(minio_data['season_folders'])}")
             
             if minio_data['available_count'] == 0:
-                print("  • Brak nowych statystyk do załadowania")
+                print("  • ℹ️ Brak nowych statystyk do załadowania")
             else:
-                print(f"  • Ready to load {minio_data['available_count']} statistics files")
+                print(f"  • ✅ Ready to load {minio_data['available_count']} statistics files")
             
             return minio_data
     
     raise Exception("No valid result from MinIO check")
 
 def load_incremental_statistics(**context):
-    """Load only new statistics from MinIO to raw_stats"""
+    """Ładuje tylko nowe statystyki z MinIO do raw_stats"""
     ti = context['ti']
     minio_info = ti.xcom_pull(task_ids='check_statistics')
     
     if minio_info['available_count'] == 0:
-        print("Brak nowych statystyk do załadowania")
+        print("ℹ️ Brak nowych statystyk do załadowania")
         return {'processed': 0, 'message': 'no_new_data'}
     
     available_files = minio_info['available_files']
     available_count = minio_info['available_count']
     
-    print(f"Loading {available_count} statistics files from MinIO...")
+    print(f"🚀 Loading {available_count} statistics files from MinIO...")
     
     # Convert files list to JSON for script
     files_json = json.dumps(available_files)
@@ -323,7 +323,7 @@ SCRIPT_END' '''
                 records_loaded = int(parts[1])
                 duplicates_skipped = int(parts[2])
                 
-                print(f"\n Load Complete:")
+                print(f"\n✅ Load Complete:")
                 print(f"  • Files: {files_processed}")
                 print(f"  • New statistics: {records_loaded}")
                 print(f"  • Duplicates: {duplicates_skipped}")
@@ -339,8 +339,8 @@ SCRIPT_END' '''
     raise Exception("No valid result from load script")
 
 def verify_statistics_load(**context):
-    """Verify loaded statistics"""
-    print("Verifying statistics load...")
+    """Weryfikuje załadowane statystyki"""
+    print("🔍 Verifying statistics load...")
     
     cmd = f'''docker exec postgres psql -U airflow -d dwh -c "
         SELECT 
@@ -355,7 +355,7 @@ def verify_statistics_load(**context):
     if result.returncode != 0:
         raise Exception(f"Verification failed: {result.stderr}")
     
-    print("Statistics table state:")
+    print("✅ Statistics table state:")
     print(result.stdout)
     
     # Check coverage
@@ -372,24 +372,24 @@ def verify_statistics_load(**context):
     result2 = subprocess.run(cmd2, shell=True, capture_output=True, text=True)
     
     if result2.returncode == 0:
-        print("\n Coverage:")
+        print("\n📊 Coverage:")
         print(result2.stdout)
     
     return "verification_complete"
 
 def trigger_dbt_stats_incremental(**context):
-    """Trigger dbt incremental refresh for statistics"""
-    print("Triggering dbt stats incremental refresh...")
+    """Uruchamia dbt incremental refresh dla statystyk"""
+    print("🔄 Triggering dbt stats incremental refresh...")
     
     cmd = 'docker exec dbt bash -c "cd /opt/dbt/project && dbt run --models bronze.stats_full_data_incremental"'
     
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=600)
     
     if result.returncode != 0:
-        print(f"dbt stderr: {result.stderr}")
+        print(f"❌ dbt stderr: {result.stderr}")
         raise Exception("dbt stats incremental refresh failed")
     
-    print("dbt stats incremental refresh completed")
+    print("✅ dbt stats incremental refresh completed")
     print(result.stdout)
     
     # Verify counts
@@ -403,7 +403,7 @@ def trigger_dbt_stats_incremental(**context):
     verify_result = subprocess.run(verify_cmd, shell=True, capture_output=True, text=True)
     
     if verify_result.returncode == 0:
-        print("\n Stats table after refresh:")
+        print("\n📊 Stats table after refresh:")
         print(verify_result.stdout)
     
     return "dbt_stats_incremental_complete"

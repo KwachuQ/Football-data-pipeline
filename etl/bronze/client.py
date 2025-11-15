@@ -179,10 +179,36 @@ class SofascoreClient:
             limits=httpx.Limits(max_keepalive_connections=5, max_connections=10)
         )
     
+    def __enter__(self):
+        """Sync context manager entry"""
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Sync context manager exit"""
+        # Close the async client synchronously
+        import asyncio
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                # If loop is running, schedule close for later
+                asyncio.ensure_future(self.close())
+            else:
+                # If loop is not running, run close synchronously
+                loop.run_until_complete(self.close())
+        except RuntimeError:
+            # Create new loop if needed
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(self.close())
+            loop.close()
+        return False
+    
     async def __aenter__(self):
+        """Async context manager entry"""
         return self
     
     async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit"""
         await self.close()
     
     async def close(self):
@@ -658,3 +684,23 @@ def get_bronze_path(data_type: str, partition_key: str, batch_id: str) -> str:
         Full storage path
     """
     return f"bronze/{data_type}/{partition_key}/batch_{batch_id}.ndjson"
+
+# ============================================================================
+# MinIO Client Helper
+# ============================================================================
+
+def get_minio_client():
+    """
+    Create MinIO client with environment configuration
+    
+    Returns:
+        Minio: Configured MinIO client instance
+    """
+    from minio import Minio
+    
+    return Minio(
+        endpoint=os.getenv('MINIO_ENDPOINT', 'minio:9000'),
+        access_key=os.getenv('MINIO_ACCESS_KEY', 'minio'),
+        secret_key=os.getenv('MINIO_SECRET_KEY', 'minio123'),
+        secure=os.getenv('MINIO_SECURE', 'false').lower() == 'true'
+    )

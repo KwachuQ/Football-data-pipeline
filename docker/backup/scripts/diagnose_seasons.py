@@ -13,8 +13,8 @@ from datetime import datetime
 from typing import Dict, Any, List, Set
 
 from minio import Minio
-from sofascore_client import SofascoreClient
-from storage_manager import BronzeStorageManager
+from client import SofascoreClient
+from storage import BronzeStorageManager
 
 # Configure logging
 logging.basicConfig(

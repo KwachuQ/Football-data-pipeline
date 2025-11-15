@@ -5,13 +5,13 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 import subprocess
 import json
 
-TOURNAMENT_ID = 202  # Ekstraklasa 
+TOURNAMENT_ID = 202  # Ekstraklasa - hardcoded
 
 def get_last_match_info(**context) -> dict:
-    """Download the last match date, season_id, and season_name from Postgres"""
+    """Pobierz ostatnią datę i season_id z PostgreSQL"""
     hook = PostgresHook(postgres_conn_id='postgres_default')
     
-    # Download match with the latest date and its season_id
+    # Pobierz mecz z najnowszą datą i jego season_id
     query = """
         SELECT 
             start_timestamp::date as match_date,
@@ -34,50 +34,50 @@ def get_last_match_info(**context) -> dict:
             'last_timestamp': str(result[3]),  # Convert to string for JSON serialization
             'tournament_id': TOURNAMENT_ID
         }
-        print(f"Znaleziono ostatni mecz:")
-        print(f"Data: {info['last_date']}")
-        print(f"Tournament ID: {info['tournament_id']}")
-        print(f"Season ID: {info['season_id']}")
-        print(f"Season Name: {info['season_name']}")
-        print(f"Timestamp: {info['last_timestamp']}")
+        print(f"✅ Znaleziono ostatni mecz:")
+        print(f"   📅 Data: {info['last_date']}")
+        print(f"   🏆 Tournament ID: {info['tournament_id']}")
+        print(f"   ⚽ Season ID: {info['season_id']}")
+        print(f"   📋 Season Name: {info['season_name']}")
+        print(f"   ⏰ Timestamp: {info['last_timestamp']}")
     else:
-        # No data - stop the pipeline
+        # Brak danych - zatrzymaj pipeline
         raise ValueError(
-            "No data in bronze.full_matches_data for tournament_id=202. "
-            "Run full data load first."
+            "❌ Brak danych w bronze.full_matches_data dla tournament_id=202. "
+            "Uruchom najpierw pełny load danych."
         )
     
     return info
 
 def extract_new_matches(**context) -> dict:
-    """Download and save only new matches to MinIO"""
+    """Pobierz i zapisz tylko nowe mecze do MinIO"""
     ti = context['ti']
     info = ti.xcom_pull(task_ids='get_last_info')
     
     last_date = info['last_date']
     season_id = info['season_id']
     
-    print(f"Searching for new matches after date: {last_date}")
-    print(f"Season ID: {season_id}, Tournament ID: {TOURNAMENT_ID}")
+    print(f"🔍 Szukam nowych meczów po dacie: {last_date}")
+    print(f"🔍 Season ID: {season_id}, Tournament ID: {TOURNAMENT_ID}")
     
     command = f"""docker exec etl_worker python -c "
+import sys
+sys.path.append('/opt/etl/scripts')
+from sofascore_incremental_etl import SofascoreIncrementalETL
 import asyncio
 import json
-from etl.bronze.extractors.incremental_extractor import SofascoreIncrementalETL
 
 async def run():
-    async with SofascoreIncrementalETL() as etl:
-        result = await etl.extract_new_matches(
-            tournament_id={TOURNAMENT_ID},
-            season_id={season_id},
-            last_match_date='{last_date}',
-            max_pages=25
-        )
+    etl = SofascoreIncrementalETL()
+    result = await etl.extract_new_matches(
+        tournament_id={TOURNAMENT_ID},
+        season_id={season_id},
+        last_match_date='{last_date}',
+        max_pages=25
+    )
     print('RESULT:' + json.dumps({{
         'new': result['total_new_matches'],
-        'saved': len(result['stored_batches']),
-        'pages': result['pages_scanned'],
-        'errors': len(result['errors'])
+        'saved': len(result['stored_batches'])
     }}))
 
 asyncio.run(run())
@@ -87,26 +87,26 @@ asyncio.run(run())
         result = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=600)
         
         if result.returncode != 0:
-            print(f"Error during execution: {result.stderr}")
-            print(f"stdout: {result.stdout}")
+            print(f"⚠️ Błąd wykonania: {result.stderr}")
+            print(f"📋 stdout: {result.stdout}")
             return {'new': 0, 'saved': 0}
         
-        print(f"Output:\n{result.stdout}")
+        print(f"📋 Output:\n{result.stdout}")
         
         for line in result.stdout.split('\n'):
             if line.startswith('RESULT:'):
                 matches_result = json.loads(line.replace('RESULT:', ''))
-                print(f"New matches: {matches_result['new']}, saved batches: {matches_result['saved']}")
+                print(f"✅ Nowe mecze: {matches_result['new']}, zapisane batche: {matches_result['saved']}")
                 return matches_result
         
-        print("No RESULT: found in output")
+        print("⚠️ Brak wyniku RESULT: w output")
         return {'new': 0, 'saved': 0}
         
     except subprocess.TimeoutExpired:
-        print(f"Timeout - process took longer than 10 minutes")
+        print(f"⚠️ Timeout - proces trwał dłużej niż 10 minut")
         return {'new': 0, 'saved': 0}
     except Exception as e:
-        print(f"Error: {type(e).__name__}: {e}")
+        print(f"⚠️ Błąd: {type(e).__name__}: {e}")
         return {'new': 0, 'saved': 0}
 
 
