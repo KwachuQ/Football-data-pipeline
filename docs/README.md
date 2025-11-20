@@ -31,6 +31,9 @@ Scope:
 - Languages: Python, SQL
 
 ## Quick Start
+
+To use Sofascore API you will need [API key](https://rapidapi.com/apidojo/api/sofascore/pricing). Update .env file with your auth data.
+
 1. Start services:
    ```sh
    cd docker
@@ -49,55 +52,58 @@ Scope:
    bash airflow/scripts/create_postgres_conn.sh
    ```
    - Scripts: [airflow/scripts/create_minio_conn.sh](airflow/scripts/create_minio_conn.sh), [airflow/scripts/create_minio_buckets.sh](airflow/scripts/create_minio_buckets.sh), [airflow/scripts/create_postgres_conn.sh](airflow/scripts/create_postgres_conn.sh)
-   
+  4. Run extract and load flow (Airflow UI or use docker exec):
 
-4. Run extracting and loading flow:
+    **a) Historical backfill (requires Sofascore API paid subscription for one time, full load):**
+    
+    - **Matches (API) → Bronze (MinIO) → raw_matches (PostgreSQL):**
+      - [airflow/dags/bronze_backfill_historical.py](airflow/dags/bronze_backfill_historical.py)
+      - [airflow/dags/broze_load_historical_matches.py](airflow/dags/broze_load_historical_matches.py)
+    - **Stats (API) → Bronze (MinIO) → raw_stats (PostgreSQL):**
+      - [airflow/dags/bronze_extract_historical_stats.py](airflow/dags/bronze_extract_historical_stats.py)
+      - [airflow/dags/bronze_load_historical_stats.py](airflow/dags/bronze_load_historical_stats.py)
+    - **Silver staging (full):**
+      - [airflow/dags/silver_stage_full.py](airflow/dags/silver_stage_full.py)
 
-  a) historical backfill (requires )
-   ```sh
-   # Inside dbt container (compose service name may be "dbt")
-   docker exec -it dbt dbt deps
-   docker exec -it dbt dbt seed
-   docker exec -it dbt dbt run
-   docker exec -it dbt dbt test
-   ```
+    **b) Incremental update (only matches after last date recorded in database):**
+    
+    - **Matches (API) → Bronze (MinIO) → raw_matches (PostgreSQL):**
+      - [airflow/dags/01_bronze_extract_incremental_matches.py](airflow/dags/01_bronze_extract_incremental_matches.py)
+      - [airflow/dags/02_bronze_load_incremental_matches.py](airflow/dags/02_bronze_load_incremental_matches.py)
+    - **Stats (API) → Bronze (MinIO) → raw_stats (PostgreSQL):**
+      - [airflow/dags/03_bronze_extract_incremental_stats.py](airflow/dags/03_bronze_extract_incremental_stats.py)
+      - [airflow/dags/04_bronze_load_incremental_stats.py](airflow/dags/04_bronze_load_incremental_stats.py)
+    - **Silver staging (incremental):**
+      - [airflow/dags/05_silver_stage_incremental.py](airflow/dags/05_silver_stage_incremental.py)
 
-## Data Model (dbt)
-- Silver models:
-  - Matches: [dbt/models/silver/fact_match.sql](dbt/models/silver/fact_match.sql)
-  - Team x Match metrics: [dbt/models/silver/fact_team_match.sql](dbt/models/silver/fact_team_match.sql)
-  - Team per Season rollups: [dbt/models/silver/fact_season_team.sql](dbt/models/silver/fact_season_team.sql)
-- Macros:
-  - Period normalization: [dbt/macros/normalize_period.sql](dbt/macros/normalize_period.sql)
-  - Metric key cleaning: [dbt/macros/clean_metric_key.sql](dbt/macros/clean_metric_key.sql)
-  - Dynamic metric columns: [dbt/macros/get_metric_keys.sql](dbt/macros/get_metric_keys.sql)
-- Sources and schemas: [dbt/models/sources.yml](dbt/models/sources.yml)
+5. Run dbt (silver → gold)
 
-## Typical Flow
-1. Bronze: Raw data lands in MinIO bucket `bronze`.
-2. Silver: Cleaning and conformance to warehouse schemas in PostgreSQL `silver`.
-3. Gold: Aggregations and analytics-ready tables (optional).
+ ```sh
+# inside dbt container
 
-## Development
-- Airflow images and deps: [docker/requirements.txt](docker/requirements.txt)
-- Airflow services and volumes: [docker/docker-compose.yml](docker/docker-compose.yml)
-- Postgres schemas: bronze/silver/gold created on init
-- Add new DAGs under Airflow’s DAGs mount; use `minio_s3` connection in hooks/operators.
+docker exec -it dbt dbt deps
+docker exec -it dbt dbt run
+docker exec -it dbt dbt test`
 
-## Troubleshooting
-- Containers:
-  ```sh
-  docker-compose ps
-  docker logs <container>
-  ```
-- Airflow connection check:
-  ```sh
-  docker exec airflow_webserver airflow connections get minio_s3
-  ```
-- Reset volumes (destructive):
-  ```sh
-  docker-compose down -v && docker volume prune
-  ```
+## Code structure
+
+ETL (Bronze):
+  - API client: etl.bronze.client.SofascoreClient (etl/bronze/client.py)
+  - Storage: etl.bronze.storage.BronzeStorageManager (etl/bronze/storage.py)
+  - Extractors:
+    - etl.bronze.extractors.statistics_extractor.StatisticsFetcher (etl/bronze/extractors/statistics_extractor.py)
+    - etl.bronze.extractors.base_extractor (etl/bronze/extractors/base_extractor.py)
+    - etl.bronze.extractors.incremental_extractor (etl/bronze/extractors/incremental_extractor.py)
+
+Diagnostics:
+  - etl.bronze.diagnostics.season_diagnostic.EkstraklasaSeasonDiagnostic (etl/bronze/diagnostics/season_diagnostic.py)
+  - etl/bronze/diagnostics/content_explorer.py
+
+Airflow DAGs: airflow/dags/
+
+Utility scripts (legacy/backup): docker/backup/scripts/
+
+dbt: dbt/
 
 ## Security Notes
 - Change default passwords before production
