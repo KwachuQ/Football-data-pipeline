@@ -41,10 +41,12 @@ To use SofaScore API you need an [API key](https://rapidapi.com/apidojo/api/sofa
    docker-compose up -d
    ```
 2. Access endpoints:
+   
    - Airflow UI: http://localhost:8080 (user: `airflow`, pass: `airflow`)
    - MinIO Console: http://localhost:9001 (user: `minio`, pass: `minio123`)
    - PostgreSQL: `localhost:5432` (db: `dwh`, user: `airflow`, pass: `airflow`)
-3. Initialize MinIO buckets & Airflow connections (if not already done):
+     
+4. Initialize MinIO buckets & Airflow connections (if not already done):
    ```sh
    # inside airflow-webserver container (or via docker exec)
    bash airflow/scripts/create_minio_conn.sh
