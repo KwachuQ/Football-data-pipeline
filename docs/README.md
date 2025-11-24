@@ -6,9 +6,9 @@ End-to-end data pipeline for ingesting, modeling and serving Ekstraklasa footbal
 
 - [General Info](#general-info)
 - [Tech Stack](#tech-stack)
+- [Project Architecture & Code Structure](#project-architecture-and-code-structure)
 - [Quick Start](#quick-start)
 - [Data Flows](#data-flows)
-- [Code Structure](#code-structure)
 - [Security Notes](#security-notes)
 - [License](#license)
 
@@ -31,6 +31,30 @@ Scope:
 - Runtime: Docker & Docker Compose ([docker/docker-compose.yml](docker/docker-compose.yml))
 - Languages: Python, SQL
 
+## Project Architecture and Code Structure
+
+<p align="center">
+  <img src="DE_pipeline_sofascore.drawio.png" alt="Architektura pipeline'u Ekstraklasa" width="900">
+</p>
+
+Bronze ETL Components:
+- API client: `etl.bronze.client.SofascoreClient` (etl/bronze/client.py)
+- Storage: `etl.bronze.storage.BronzeStorageManager` (etl/bronze/storage.py)
+- Extractors:
+  - `etl.bronze.extractors.statistics_extractor.StatisticsFetcher` (etl/bronze/extractors/statistics_extractor.py)
+  - `etl.bronze.extractors.base_extractor` (etl/bronze/extractors/base_extractor.py)
+  - `etl.bronze.extractors.incremental_extractor` (etl/bronze/extractors/incremental_extractor.py)
+
+Diagnostics:
+- `etl.bronze.diagnostics.season_diagnostic.EkstraklasaSeasonDiagnostic` (etl/bronze/diagnostics/season_diagnostic.py)
+- `etl/bronze/diagnostics/content_explorer.py`
+
+Other:
+- Airflow DAGs: `airflow/dags/`
+- Utility scripts (legacy/backup): `docker/backup/scripts/`
+- dbt project: `dbt/`
+
+
 ## Quick Start
 
 To use SofaScore API you need an [API key](https://rapidapi.com/apidojo/api/sofascore/pricing). Update your `.env` file with credentials.
@@ -44,6 +68,8 @@ To use SofaScore API you need an [API key](https://rapidapi.com/apidojo/api/sofa
    - Airflow UI: http://localhost:8080 (user: `airflow`, pass: `airflow`)
    - MinIO Console: http://localhost:9001 (user: `minio`, pass: `minio123`)
    - PostgreSQL: `localhost:5432` (db: `dwh`, user: `airflow`, pass: `airflow`)
+   - Metabase: http://localhost:3000
+
 3. Initialize MinIO buckets & Airflow connections (if not already done):
    ```sh
    # inside airflow-webserver container (or via docker exec)
@@ -85,25 +111,20 @@ docker exec -it dbt dbt deps
 docker exec -it dbt dbt run
 docker exec -it dbt dbt test
 ```
+## Analytical layer
 
-## Code Structure
+Metabase is included for BI exploration (service defined in [docker/docker-compose.yml](docker/docker-compose.yml)).
 
-Bronze ETL Components:
-- API client: `etl.bronze.client.SofascoreClient` (etl/bronze/client.py)
-- Storage: `etl.bronze.storage.BronzeStorageManager` (etl/bronze/storage.py)
-- Extractors:
-  - `etl.bronze.extractors.statistics_extractor.StatisticsFetcher` (etl/bronze/extractors/statistics_extractor.py)
-  - `etl.bronze.extractors.base_extractor` (etl/bronze/extractors/base_extractor.py)
-  - `etl.bronze.extractors.incremental_extractor` (etl/bronze/extractors/incremental_extractor.py)
+Initial setup:
+- On first launch create admin account.
+- Add PostgreSQL database:
+  - Host: postgres
+  - Port: 5432
+  - DB name: dwh
+  - User: airflow
+  - Password: airflow
+- After running dbt ([dbt/dbt_project.yml](dbt/dbt_project.yml)) click Sync to load new tables (silver/gold schemas).
 
-Diagnostics:
-- `etl.bronze.diagnostics.season_diagnostic.EkstraklasaSeasonDiagnostic` (etl/bronze/diagnostics/season_diagnostic.py)
-- `etl/bronze/diagnostics/content_explorer.py`
-
-Other:
-- Airflow DAGs: `airflow/dags/`
-- Utility scripts (legacy/backup): `docker/backup/scripts/`
-- dbt project: `dbt/`
 
 ## Security Notes
 
