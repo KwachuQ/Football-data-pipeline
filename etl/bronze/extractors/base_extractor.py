@@ -381,22 +381,28 @@ class SofascoreETL:
 
 async def main():
     """
-    Example usage: Extract Ekstraklasa 2025/26 season data
+    Extract league data from configuration file
+    Uses config/league_config.yaml for all parameters
     """
-    # Ekstraklasa 2025-2026 configuration
-    EKSTRAKLASA_ID = 202
-    SEASON_2025_ID = 76477
+    from etl.utils.config_loader import get_active_config
     
     try:
+        # Load configuration
+        config = get_active_config()
+        
         logger.info("=== Starting Sofascore ETL Process ===")
+        logger.info(f"League: {config['league_name']} ({config['country']})")
+        logger.info(f"League ID: {config['league_id']}")
+        logger.info(f"Season: {config['season_name']} (ID: {config['season_id']})")
+        logger.info(f"Max pages: {config['max_pages']}")
         
         async with SofascoreETL() as etl:
             # Extract tournament matches
-            logger.info(f"Extracting matches for Ekstraklasa (ID: {EKSTRAKLASA_ID})")
-            matches_result = etl.extract_tournament_matches(
-                tournament_id=EKSTRAKLASA_ID,
-                season_id=SEASON_2025_ID,
-                max_pages=3,
+            logger.info("Extracting tournament matches...")
+            matches_result = await etl.extract_tournament_matches(
+                tournament_id=config['league_id'],
+                season_id=config['season_id'],
+                max_pages=config['max_pages'],
                 replace_partition=True
             )
             
@@ -407,15 +413,21 @@ async def main():
             
             if matches_result['errors']:
                 logger.error("Errors encountered:")
-                for error in matches_result['errors']:
+                for error in matches_result['errors'][:5]:  # Show first 5
                     logger.error(f"  • {error}")
+                if len(matches_result['errors']) > 5:
+                    logger.error(f"  ... and {len(matches_result['errors']) - 5} more errors")
             
             # List available partitions
-            partitions = etl.storage.list_partitions("matches", EKSTRAKLASA_ID)
+            partitions = etl.storage.list_partitions("matches", config['league_id'])
             logger.info(f"Available partitions: {len(partitions)}")
         
         logger.info("=== ETL Process Completed Successfully ===")
         
+    except FileNotFoundError as e:
+        logger.error(str(e))
+        logger.error("Please create config/league_config.yaml before running the extractor")
+        raise
     except Exception as e:
         logger.error(f"ETL process failed: {type(e).__name__}: {e}", exc_info=True)
         raise
