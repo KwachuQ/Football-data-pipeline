@@ -124,7 +124,9 @@ Initial setup:
   - Password: airflow
 - After running dbt ([dbt/dbt_project.yml](dbt/dbt_project.yml)) click Sync to load new tables (gold schemas).
 
-
+In order to export gold layer tables to .csv file (to use with other data viz tools) run:
+   - [airflow/scripts/export_gold_tables.sh](airflow/scripts/export_gold_tables.sh)
+   
 ## Security Notes
 
 - Change default passwords before production.

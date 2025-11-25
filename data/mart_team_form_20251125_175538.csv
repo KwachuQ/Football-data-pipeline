@@ -1,0 +1,299 @@
+team_id,team_name,season_id,season_name,season_year,last_5_results,points_last_5,wins_last_5,draws_last_5,losses_last_5,goals_for_last_5,goals_against_last_5,halftime_leading_count,halftime_leading_wins,halftime_leading_draws,halftime_leading_losses,halftime_leading_win_pct,conceded_first_count,points_after_conceding_first,points_pct_after_conceding_first
+3122,Wisła Płock,76477,Ekstraklasa 25/26,25/26,WWWWW,15,5,0,0,8,4,6,5,0,1,83.3,11,23,69.7
+3113,Zagłębie Lubin,76477,Ekstraklasa 25/26,25/26,LWWWW,12,4,0,1,7,7,7,5,0,2,71.4,12,13,36.1
+3117,Pogoń Szczecin,76477,Ekstraklasa 25/26,25/26,WDLWW,10,3,1,1,10,8,4,3,1,0,75.0,15,22,48.9
+3110,Górnik Zabrze,76477,Ekstraklasa 25/26,25/26,LLWWW,9,3,0,2,9,6,6,5,1,0,83.3,12,23,63.9
+7915,Motor Lublin,76477,Ekstraklasa 25/26,25/26,DLWWD,8,2,2,1,10,9,3,1,0,2,33.3,11,11,33.3
+7691,Jagiellonia Białystok,76477,Ekstraklasa 25/26,25/26,DDLWW,8,2,2,1,11,6,4,4,0,0,100.0,10,19,63.3
+7913,KS Lechia Gdańsk,76477,Ekstraklasa 25/26,25/26,WWDLD,8,2,2,1,8,8,5,2,2,1,40.0,14,13,31.0
+3112,GKS Katowice,76477,Ekstraklasa 25/26,25/26,DDWDD,7,1,4,0,10,6,2,1,1,0,50.0,13,14,35.9
+3121,Lech Poznań,76477,Ekstraklasa 25/26,25/26,WLLWL,6,2,0,3,9,8,6,3,2,1,50.0,12,15,41.7
+35268,Raków Częstochowa,76477,Ekstraklasa 25/26,25/26,DDDWL,6,1,3,1,9,8,3,1,2,0,33.3,12,9,25.0
+5064,MZKS Arka Gdynia,76477,Ekstraklasa 25/26,25/26,LWLWL,6,2,0,3,6,13,3,2,0,1,66.7,13,12,30.8
+5065,MKS Korona Kielce,76477,Ekstraklasa 25/26,25/26,DDWLL,5,1,2,2,5,7,5,3,1,1,60.0,10,10,33.3
+36851,Bruk-Bet Termalica Nieciecza,76477,Ekstraklasa 25/26,25/26,WDDLL,5,1,2,2,6,8,7,1,4,2,14.3,13,12,30.8
+7295,Radomiak Radom,76477,Ekstraklasa 25/26,25/26,LWDLL,4,1,1,3,9,9,4,3,1,0,75.0,14,17,40.5
+3115,Widzew Łódź,76477,Ekstraklasa 25/26,25/26,DLLLW,4,1,1,3,6,11,4,4,0,0,100.0,13,7,17.9
+3106,Legia Warszawa,76477,Ekstraklasa 25/26,25/26,LDWLL,4,1,1,3,5,8,4,3,1,0,75.0,10,13,43.3
+4901,Cracovia,76477,Ekstraklasa 25/26,25/26,DLLLW,4,1,1,3,4,7,7,3,2,2,42.9,9,5,18.5
+7918,Piast Gliwice,76477,Ekstraklasa 25/26,25/26,DDLLD,3,0,3,2,8,6,2,0,2,0,0.0,11,10,30.3
+3121,Lech Poznań,61236,Ekstraklasa 24/25,24/25,WWDWW,13,4,1,0,14,5,16,12,4,0,75.0,20,34,56.7
+35268,Raków Częstochowa,61236,Ekstraklasa 24/25,24/25,WWDDW,11,3,2,0,9,4,15,8,6,1,53.3,17,30,58.8
+7913,KS Lechia Gdańsk,61236,Ekstraklasa 24/25,24/25,DWWDW,11,3,2,0,13,9,9,4,3,2,44.4,26,27,34.6
+7295,Radomiak Radom,61236,Ekstraklasa 24/25,24/25,DWWWL,10,3,1,1,8,7,6,4,1,1,66.7,28,24,28.6
+5065,MKS Korona Kielce,61236,Ekstraklasa 24/25,24/25,WLLWW,9,3,0,2,9,7,7,6,0,1,85.7,25,46,61.3
+38732,Stal Mielec,61236,Ekstraklasa 24/25,24/25,WLDDW,8,2,2,1,9,10,8,3,2,3,37.5,29,26,29.9
+3115,Widzew Łódź,61236,Ekstraklasa 24/25,24/25,LWDLW,7,2,1,2,4,6,8,6,2,0,75.0,25,27,36.0
+3117,Pogoń Szczecin,61236,Ekstraklasa 24/25,24/25,WLWLD,7,2,1,2,12,10,12,8,3,1,66.7,20,22,36.7
+3110,Górnik Zabrze,61236,Ekstraklasa 24/25,24/25,LLWWL,6,2,0,3,4,4,10,4,3,3,40.0,22,23,34.8
+4901,Cracovia,61236,Ekstraklasa 24/25,24/25,DWLDD,6,1,3,1,7,6,7,2,4,1,28.6,27,32,39.5
+3108,Śląsk Wrocław,61236,Ekstraklasa 24/25,24/25,WLLWL,6,2,0,3,5,8,8,4,2,2,50.0,29,26,29.9
+7915,Motor Lublin,61236,Ekstraklasa 24/25,24/25,DWLDD,6,1,3,1,5,10,10,5,5,0,50.0,26,28,35.9
+3112,GKS Katowice,61236,Ekstraklasa 24/25,24/25,DLWLD,5,1,2,2,9,10,10,4,5,1,40.0,24,27,37.5
+7918,Piast Gliwice,61236,Ekstraklasa 24/25,24/25,LWDLL,4,1,1,3,7,5,9,5,4,0,55.6,22,16,24.2
+7691,Jagiellonia Białystok,61236,Ekstraklasa 24/25,24/25,LWDLL,4,1,1,3,6,7,15,7,6,2,46.7,23,26,37.7
+3113,Zagłębie Lubin,61236,Ekstraklasa 24/25,24/25,DLWLL,4,1,1,3,6,9,7,2,2,3,28.6,27,25,30.9
+3106,Legia Warszawa,61236,Ekstraklasa 24/25,24/25,LLDDD,3,0,3,2,8,7,8,5,3,0,62.5,27,42,51.9
+38729,Puszcza Niepołomice,61236,Ekstraklasa 24/25,24/25,LLDLD,2,0,2,3,8,19,9,4,2,3,44.4,26,18,23.1
+3117,Pogoń Szczecin,52176,Ekstraklasa 23/24,23/24,WWLWW,12,4,0,1,5,4,8,4,4,0,50.0,22,29,43.9
+7691,Jagiellonia Białystok,52176,Ekstraklasa 23/24,23/24,WWWLL,9,3,0,2,11,6,15,10,4,1,66.7,23,39,56.5
+7918,Piast Gliwice,52176,Ekstraklasa 23/24,23/24,LLWWW,9,3,0,2,8,3,8,6,1,1,75.0,19,26,45.6
+38729,Puszcza Niepołomice,52176,Ekstraklasa 23/24,23/24,WWWLL,9,3,0,2,4,3,11,3,3,5,27.3,24,20,27.8
+3108,Śląsk Wrocław,52176,Ekstraklasa 23/24,23/24,DWWDD,9,2,3,0,12,5,12,7,4,1,58.3,19,28,49.1
+4901,Cracovia,52176,Ekstraklasa 23/24,23/24,LWLWW,9,3,0,2,7,6,12,7,3,2,58.3,23,21,30.4
+3105,Ruch Chorzów,52176,Ekstraklasa 23/24,23/24,WLDWD,8,2,2,1,9,5,6,4,1,1,66.7,25,28,37.3
+3113,Zagłębie Lubin,52176,Ekstraklasa 23/24,23/24,LWDWD,8,2,2,1,12,7,13,5,5,3,38.5,23,19,27.5
+5065,MKS Korona Kielce,52176,Ekstraklasa 23/24,23/24,DWLLW,7,2,1,2,6,6,8,5,1,2,62.5,26,20,25.6
+38732,Stal Mielec,52176,Ekstraklasa 23/24,23/24,LLWWD,7,2,1,2,7,9,7,5,2,0,71.4,24,32,44.4
+3106,Legia Warszawa,52176,Ekstraklasa 23/24,23/24,WDDDD,7,1,4,0,8,6,12,6,5,1,50.0,24,34,47.2
+3121,Lech Poznań,52176,Ekstraklasa 23/24,23/24,DWDLL,5,1,2,2,4,7,13,8,4,1,61.5,21,30,47.6
+35268,Raków Częstochowa,52176,Ekstraklasa 23/24,23/24,DLWLD,5,1,2,2,4,7,13,9,3,1,69.2,23,22,31.9
+7922,Warta Poznań,52176,Ekstraklasa 23/24,23/24,LDLWL,4,1,1,3,2,8,10,6,2,2,60.0,24,27,37.5
+7295,Radomiak Radom,52176,Ekstraklasa 23/24,23/24,DLDDD,4,0,4,1,7,11,8,4,4,0,50.0,26,22,28.2
+3123,ŁKS Łódź,52176,Ekstraklasa 23/24,23/24,WLLDL,4,1,1,3,6,14,5,3,0,2,60.0,30,22,24.4
+3110,Górnik Zabrze,52176,Ekstraklasa 23/24,23/24,LLLLW,3,1,0,4,6,9,14,8,3,3,57.1,22,26,39.4
+3115,Widzew Łódź,52176,Ekstraklasa 23/24,23/24,DLDLD,3,0,3,2,6,8,8,5,2,1,62.5,25,34,45.3
+3117,Pogoń Szczecin,42004,Ekstraklasa 22/23,22/23,WLWWW,12,4,0,1,10,5,11,8,2,1,72.7,25,37,49.3
+3110,Górnik Zabrze,42004,Ekstraklasa 22/23,22/23,WWDWD,11,3,2,0,8,3,10,5,3,2,50.0,22,20,30.3
+3113,Zagłębie Lubin,42004,Ekstraklasa 22/23,22/23,WWDDW,11,3,2,0,9,2,8,3,4,1,37.5,25,29,38.7
+3108,Śląsk Wrocław,42004,Ekstraklasa 22/23,22/23,LWWWD,10,3,1,1,9,8,6,5,1,0,83.3,28,33,39.3
+7918,Piast Gliwice,42004,Ekstraklasa 22/23,22/23,WWWDL,10,3,1,1,4,3,9,4,5,0,44.4,23,32,46.4
+3121,Lech Poznań,42004,Ekstraklasa 22/23,22/23,WDDWD,9,2,3,0,10,1,12,8,4,0,66.7,17,29,56.9
+3106,Legia Warszawa,42004,Ekstraklasa 22/23,22/23,WLWLW,9,3,0,2,11,5,14,6,5,3,42.9,21,24,38.1
+38732,Stal Mielec,42004,Ekstraklasa 22/23,22/23,WLLWW,9,3,0,2,3,3,10,4,4,2,40.0,22,17,25.8
+7913,KS Lechia Gdańsk,42004,Ekstraklasa 22/23,22/23,LWWDL,7,2,1,2,3,7,3,0,2,1,0.0,22,15,22.7
+4901,Cracovia,42004,Ekstraklasa 22/23,22/23,WWDLL,7,2,1,2,5,6,9,7,2,0,77.8,22,20,30.3
+7295,Radomiak Radom,42004,Ekstraklasa 22/23,22/23,LWDDD,6,1,3,1,6,7,9,4,4,1,44.4,24,25,34.7
+35268,Raków Częstochowa,42004,Ekstraklasa 22/23,22/23,LDDLW,5,1,2,2,7,5,15,9,5,1,60.0,17,21,41.2
+5065,MKS Korona Kielce,42004,Ekstraklasa 22/23,22/23,DDLWL,5,1,2,2,6,7,10,6,3,1,60.0,24,30,41.7
+35330,Miedź Legnica,42004,Ekstraklasa 22/23,22/23,LLLDW,4,1,1,3,5,9,6,3,1,2,50.0,29,22,25.3
+3115,Widzew Łódź,42004,Ekstraklasa 22/23,22/23,DLDDL,3,0,3,2,4,11,5,4,1,0,80.0,21,22,34.9
+7691,Jagiellonia Białystok,42004,Ekstraklasa 22/23,22/23,LLLLW,3,1,0,4,6,10,9,6,1,2,66.7,28,44,52.4
+7922,Warta Poznań,42004,Ekstraklasa 22/23,22/23,LLDLL,1,0,1,4,3,9,9,3,5,1,33.3,20,12,20.0
+3122,Wisła Płock,42004,Ekstraklasa 22/23,22/23,LDLLL,1,0,1,4,2,10,9,3,3,3,33.3,27,24,29.6
+7295,Radomiak Radom,37062,Ekstraklasa 21/22,21/22,WWDWD,11,3,2,0,6,10,12,6,4,2,50.0,25,31,41.3
+36851,Bruk-Bet Termalica Nieciecza,37062,Ekstraklasa 21/22,21/22,WDWWD,11,3,2,0,8,4,8,2,2,4,25.0,28,32,38.1
+3121,Lech Poznań,37062,Ekstraklasa 21/22,21/22,WDDWW,11,3,2,0,12,4,13,8,5,0,61.5,18,29,53.7
+3117,Pogoń Szczecin,37062,Ekstraklasa 21/22,21/22,LWWWD,10,3,1,1,7,6,16,9,5,2,56.3,24,47,65.3
+3106,Legia Warszawa,37062,Ekstraklasa 21/22,21/22,WWWLL,9,3,0,2,12,10,10,8,2,0,80.0,26,32,41.0
+7913,KS Lechia Gdańsk,37062,Ekstraklasa 21/22,21/22,LLWWW,9,3,0,2,7,7,15,11,2,2,73.3,21,26,41.3
+3108,Śląsk Wrocław,37062,Ekstraklasa 21/22,21/22,DWLWD,8,2,2,1,6,11,10,3,4,3,30.0,28,33,39.3
+35268,Raków Częstochowa,37062,Ekstraklasa 21/22,21/22,WLLWD,7,2,1,2,8,4,13,6,4,3,46.2,19,20,35.1
+4901,Cracovia,37062,Ekstraklasa 21/22,21/22,LWWLD,7,2,1,2,5,4,8,4,4,0,50.0,23,20,29.0
+7918,Piast Gliwice,37062,Ekstraklasa 21/22,21/22,LDDDW,6,1,3,1,8,6,9,5,3,1,55.6,22,31,47.0
+3122,Wisła Płock,37062,Ekstraklasa 21/22,21/22,WLDLD,5,1,2,2,7,10,14,9,4,1,64.3,24,19,26.4
+3111,Wisła Kraków,37062,Ekstraklasa 21/22,21/22,DLLWD,5,1,2,2,5,9,9,3,2,4,33.3,26,23,29.5
+3110,Górnik Zabrze,37062,Ekstraklasa 21/22,21/22,DWLLD,5,1,2,2,15,12,8,4,4,0,50.0,26,28,35.9
+3113,Zagłębie Lubin,37062,Ekstraklasa 21/22,21/22,LWDLD,5,1,2,2,12,9,6,1,2,3,16.7,24,20,27.8
+7922,Warta Poznań,37062,Ekstraklasa 21/22,21/22,DDDDL,4,0,4,1,7,7,7,1,6,0,14.3,23,22,31.9
+7691,Jagiellonia Białystok,37062,Ekstraklasa 21/22,21/22,DLWLL,4,1,1,3,5,5,2,2,0,0,100.0,26,24,30.8
+38732,Stal Mielec,37062,Ekstraklasa 21/22,21/22,LLLWL,3,1,0,4,6,11,12,8,3,1,66.7,26,30,38.5
+3125,Górnik Łęczna,37062,Ekstraklasa 21/22,21/22,DLLLL,1,0,1,4,4,11,6,1,2,3,16.7,26,20,25.6
+4901,Cracovia,29222,Ekstraklasa 20/21,20/21,DWWWW,13,4,1,0,3,2,7,5,2,0,71.4,21,25,39.7
+35268,Raków Częstochowa,29222,Ekstraklasa 20/21,20/21,DWDWW,11,3,2,0,7,1,12,8,4,0,66.7,18,30,55.6
+7922,Warta Poznań,29222,Ekstraklasa 20/21,20/21,DDWWD,9,2,3,0,6,6,6,2,3,1,33.3,19,19,33.3
+38732,Stal Mielec,29222,Ekstraklasa 20/21,20/21,WLDDW,8,2,2,1,4,3,5,2,0,3,40.0,25,32,42.7
+3106,Legia Warszawa,29222,Ekstraklasa 20/21,20/21,WWLDD,8,2,2,1,3,0,9,5,4,0,55.6,15,27,60.0
+7918,Piast Gliwice,29222,Ekstraklasa 20/21,20/21,DLWWD,8,2,2,1,6,7,8,6,2,0,75.0,18,20,37.0
+3122,Wisła Płock,29222,Ekstraklasa 20/21,20/21,WWDDL,8,2,2,1,8,5,6,4,2,0,66.7,21,22,34.9
+3117,Pogoń Szczecin,29222,Ekstraklasa 20/21,20/21,DWLLW,7,2,1,2,4,6,10,6,4,0,60.0,13,6,15.4
+3110,Górnik Zabrze,29222,Ekstraklasa 20/21,20/21,WWLDL,7,2,1,2,4,6,8,3,2,3,37.5,21,22,34.9
+3113,Zagłębie Lubin,29222,Ekstraklasa 20/21,20/21,LLWLW,6,2,0,3,7,8,7,1,3,3,14.3,23,20,29.0
+3121,Lech Poznań,29222,Ekstraklasa 20/21,20/21,LDDLW,5,1,2,2,7,5,9,2,4,3,22.2,21,16,25.4
+3111,Wisła Kraków,29222,Ekstraklasa 20/21,20/21,DDWLL,5,1,2,2,5,8,7,2,4,1,28.6,21,29,46.0
+3108,Śląsk Wrocław,29222,Ekstraklasa 20/21,20/21,LDLLW,4,1,1,3,8,8,9,4,2,3,44.4,21,21,33.3
+7919,Podbeskidzie Bielsko-Biała,29222,Ekstraklasa 20/21,20/21,LLLWL,3,1,0,4,5,8,8,5,0,3,62.5,26,20,25.6
+7691,Jagiellonia Białystok,29222,Ekstraklasa 20/21,20/21,WLLLL,3,1,0,4,6,9,8,5,2,1,62.5,26,27,34.6
+7913,KS Lechia Gdańsk,29222,Ekstraklasa 20/21,20/21,LLDDL,2,0,2,3,5,8,9,3,5,1,33.3,23,26,37.7
+3121,Lech Poznań,23666,Ekstraklasa 19/20,19/20,WDWWW,13,4,1,0,13,6,14,8,5,1,57.1,23,38,55.1
+3122,Wisła Płock,23666,Ekstraklasa 19/20,19/20,LWDWW,10,3,1,1,8,3,12,7,4,1,58.3,29,39,44.8
+7918,Piast Gliwice,23666,Ekstraklasa 19/20,19/20,LLWWW,9,3,0,2,5,3,12,7,3,2,58.3,22,21,31.8
+3113,Zagłębie Lubin,23666,Ekstraklasa 19/20,19/20,DWDDW,9,2,3,0,9,4,14,6,6,2,42.9,30,28,31.1
+4901,Cracovia,23666,Ekstraklasa 19/20,19/20,WDLDW,8,2,2,1,7,6,9,5,4,0,55.6,26,24,30.8
+5064,MZKS Arka Gdynia,23666,Ekstraklasa 19/20,19/20,DDWWL,8,2,2,1,8,8,8,4,3,1,50.0,29,27,31.0
+7691,Jagiellonia Białystok,23666,Ekstraklasa 19/20,19/20,LWLWD,7,2,1,2,5,11,13,4,7,2,30.8,26,34,43.6
+3106,Legia Warszawa,23666,Ekstraklasa 19/20,19/20,DWWLL,7,2,1,2,5,5,14,10,3,1,71.4,23,32,46.4
+35268,Raków Częstochowa,23666,Ekstraklasa 19/20,19/20,WLLDW,7,2,1,2,9,12,13,5,4,4,38.5,28,33,39.3
+3117,Pogoń Szczecin,23666,Ekstraklasa 19/20,19/20,DWWLL,7,2,1,2,8,7,10,3,4,3,30.0,23,22,31.9
+3110,Górnik Zabrze,23666,Ekstraklasa 19/20,19/20,DDWLD,6,1,3,1,6,6,9,5,3,1,55.6,27,32,39.5
+5065,MKS Korona Kielce,23666,Ekstraklasa 19/20,19/20,WLWLL,6,2,0,3,6,7,7,5,2,0,71.4,26,19,24.4
+3123,ŁKS Łódź,23666,Ekstraklasa 19/20,19/20,LWLDL,4,1,1,3,6,11,7,4,2,1,57.1,32,29,30.2
+3111,Wisła Kraków,23666,Ekstraklasa 19/20,19/20,DLLDD,3,0,3,2,5,6,10,7,2,1,70.0,26,18,23.1
+7913,KS Lechia Gdańsk,23666,Ekstraklasa 19/20,19/20,DLLDD,3,0,3,2,6,8,11,6,4,1,54.5,28,36,42.9
+3108,Śląsk Wrocław,23666,Ekstraklasa 19/20,19/20,DLLLL,1,0,1,4,6,9,12,7,2,3,58.3,30,31,34.4
+7918,Piast Gliwice,17361,Ekstraklasa 18/19,18/19,WWWDW,13,4,1,0,7,2,17,11,5,1,64.7,21,33,52.4
+3113,Zagłębie Lubin,17361,Ekstraklasa 18/19,18/19,WDWWW,13,4,1,0,7,6,13,6,6,1,46.2,28,34,40.5
+3108,Śląsk Wrocław,17361,Ekstraklasa 18/19,18/19,WDWDW,11,3,2,0,13,4,12,7,3,2,58.3,27,33,40.7
+5064,MZKS Arka Gdynia,17361,Ekstraklasa 18/19,18/19,LWWWD,10,3,1,1,8,6,6,2,3,1,33.3,28,30,35.7
+35330,Miedź Legnica,17361,Ekstraklasa 18/19,18/19,DDDWW,9,2,3,0,8,9,9,6,2,1,66.7,29,29,33.3
+4901,Cracovia,17361,Ekstraklasa 18/19,18/19,DDWWL,8,2,2,1,6,7,8,4,4,0,50.0,25,30,40.0
+3110,Górnik Zabrze,17361,Ekstraklasa 18/19,18/19,DDDDW,7,1,4,0,9,3,12,5,4,3,41.7,28,25,29.8
+7691,Jagiellonia Białystok,17361,Ekstraklasa 18/19,18/19,LWLWL,6,2,0,3,6,8,13,6,6,1,46.2,28,37,44.0
+3121,Lech Poznań,17361,Ekstraklasa 18/19,18/19,LWLLW,6,2,0,3,4,5,14,10,3,1,71.4,27,33,40.7
+3111,Wisła Kraków,17361,Ekstraklasa 18/19,18/19,DLWDL,5,1,2,2,9,10,13,6,3,4,46.2,30,24,26.7
+7693,Zagłębie Sosnowiec,17361,Ekstraklasa 18/19,18/19,WDLDL,5,1,2,2,4,14,8,3,3,2,37.5,33,33,33.3
+7913,KS Lechia Gdańsk,17361,Ekstraklasa 18/19,18/19,WLLLD,4,1,1,3,5,8,18,10,6,2,55.6,19,19,33.3
+3117,Pogoń Szczecin,17361,Ekstraklasa 18/19,18/19,DLWLL,4,1,1,3,7,6,17,7,5,5,41.2,27,28,34.6
+5065,MKS Korona Kielce,17361,Ekstraklasa 18/19,18/19,DDLLD,3,0,3,2,4,8,9,4,4,1,44.4,29,34,39.1
+3106,Legia Warszawa,17361,Ekstraklasa 18/19,18/19,LLLDD,2,0,2,3,6,6,11,7,3,1,63.6,23,20,29.0
+3122,Wisła Płock,17361,Ekstraklasa 18/19,18/19,LDLLL,1,0,1,4,5,6,9,5,3,1,55.6,31,35,37.6
+3108,Śląsk Wrocław,13350,Ekstraklasa 17/18,17/18,DWWWW,13,4,1,0,12,5,11,7,2,2,63.6,29,33,37.9
+3106,Legia Warszawa,13350,Ekstraklasa 17/18,17/18,DWWWW,13,4,1,0,11,3,17,8,8,1,47.1,22,28,42.4
+36766,Sandecja Nowy Sącz,13350,Ekstraklasa 17/18,17/18,WDWWL,10,3,1,1,4,6,6,2,2,2,33.3,31,32,34.4
+3121,Lech Poznań,13350,Ekstraklasa 17/18,17/18,DWDWD,9,2,3,0,3,10,12,11,1,0,91.7,22,33,50.0
+3117,Pogoń Szczecin,13350,Ekstraklasa 17/18,17/18,DLLWW,7,2,1,2,10,6,10,4,3,3,40.0,27,22,27.2
+7691,Jagiellonia Białystok,13350,Ekstraklasa 17/18,17/18,WDDLD,6,1,3,1,6,3,10,6,4,0,60.0,23,32,46.4
+3111,Wisła Kraków,13350,Ekstraklasa 17/18,17/18,LLWDD,5,1,2,2,8,3,11,5,5,1,45.5,24,29,40.3
+7918,Piast Gliwice,13350,Ekstraklasa 17/18,17/18,WLDLD,5,1,2,2,11,8,5,2,2,1,40.0,25,25,33.3
+5065,MKS Korona Kielce,13350,Ekstraklasa 17/18,17/18,DLWDL,5,1,2,2,4,14,12,8,3,1,66.7,25,39,52.0
+4901,Cracovia,13350,Ekstraklasa 17/18,17/18,DDLLW,5,1,2,2,9,11,11,5,3,3,45.5,29,29,33.3
+3110,Górnik Zabrze,13350,Ekstraklasa 17/18,17/18,WLLDD,5,1,2,2,10,6,14,9,2,3,64.3,30,32,35.6
+7913,KS Lechia Gdańsk,13350,Ekstraklasa 17/18,17/18,LWDDL,5,1,2,2,5,6,7,3,3,1,42.9,29,27,31.0
+5064,MZKS Arka Gdynia,13350,Ekstraklasa 17/18,17/18,DLWLD,5,1,2,2,6,11,8,6,2,0,75.0,24,18,25.0
+36851,Bruk-Bet Termalica Nieciecza,13350,Ekstraklasa 17/18,17/18,LWLDL,4,1,1,3,6,10,5,1,2,2,20.0,32,32,33.3
+3113,Zagłębie Lubin,13350,Ekstraklasa 17/18,17/18,DDLDD,4,0,4,1,5,8,9,5,3,1,55.6,23,31,44.9
+3122,Wisła Płock,13350,Ekstraklasa 17/18,17/18,LWLLD,4,1,1,3,8,8,9,3,6,0,33.3,26,30,38.5
+7913,KS Lechia Gdańsk,11734,Ekstraklasa 16/17,16/17,WWWWL,12,4,0,1,8,0,15,12,3,0,80.0,23,37,53.6
+3106,Legia Warszawa,11734,Ekstraklasa 16/17,16/17,LDWWW,10,3,1,1,9,0,14,5,7,2,35.7,19,14,24.6
+3108,Śląsk Wrocław,11734,Ekstraklasa 16/17,16/17,DWWLW,10,3,1,1,15,3,10,4,4,2,40.0,26,25,32.1
+3113,Zagłębie Lubin,11734,Ekstraklasa 16/17,16/17,DDDWW,9,2,3,0,11,6,11,5,5,1,45.5,28,30,35.7
+3121,Lech Poznań,11734,Ekstraklasa 16/17,16/17,WWLLW,9,3,0,2,6,5,15,8,7,0,53.3,17,23,45.1
+5065,MKS Korona Kielce,11734,Ekstraklasa 16/17,16/17,LDDWW,8,2,2,1,5,6,8,5,3,0,62.5,29,28,32.2
+7918,Piast Gliwice,11734,Ekstraklasa 16/17,16/17,DWWDL,8,2,2,1,11,4,9,5,2,2,55.6,28,28,33.3
+4901,Cracovia,11734,Ekstraklasa 16/17,16/17,DLWLW,7,2,1,2,3,7,10,9,0,1,90.0,29,32,36.8
+3125,Górnik Łęczna,11734,Ekstraklasa 16/17,16/17,WDLWL,7,2,1,2,7,8,8,4,4,0,50.0,27,29,35.8
+36851,Bruk-Bet Termalica Nieciecza,11734,Ekstraklasa 16/17,16/17,DDDWL,6,1,3,1,4,12,10,6,4,0,60.0,28,27,32.1
+5064,MZKS Arka Gdynia,11734,Ekstraklasa 16/17,16/17,DLLDW,5,1,2,2,6,7,11,5,4,2,45.5,28,17,20.2
+3111,Wisła Kraków,11734,Ekstraklasa 16/17,16/17,DLWLL,4,1,1,3,8,9,11,7,2,2,63.6,29,31,35.6
+3105,Ruch Chorzów,11734,Ekstraklasa 16/17,16/17,LWLDL,4,1,1,3,3,14,6,3,3,0,50.0,30,27,30.0
+7691,Jagiellonia Białystok,11734,Ekstraklasa 16/17,16/17,LDLLW,4,1,1,3,6,7,17,9,8,0,52.9,23,34,49.3
+3122,Wisła Płock,11734,Ekstraklasa 16/17,16/17,DLDDL,3,0,3,2,3,10,8,4,3,1,50.0,29,35,40.2
+3117,Pogoń Szczecin,11734,Ekstraklasa 16/17,16/17,WLLLL,3,1,0,4,4,11,6,4,2,0,66.7,31,37,39.8
+3110,Górnik Zabrze,10361,Ekstraklasa 15/16,15/16,WLWWW,12,4,0,1,3,2,4,3,0,1,75.0,28,25,29.8
+3113,Zagłębie Lubin,10361,Ekstraklasa 15/16,15/16,DWDWW,11,3,2,0,13,2,13,7,5,1,53.8,24,33,45.8
+3108,Śląsk Wrocław,10361,Ekstraklasa 15/16,15/16,WWWLD,10,3,1,1,9,7,11,6,3,2,54.5,28,41,48.8
+5065,MKS Korona Kielce,10361,Ekstraklasa 15/16,15/16,DWWWL,10,3,1,1,6,7,9,2,4,3,22.2,25,27,36.0
+3106,Legia Warszawa,10361,Ekstraklasa 15/16,15/16,WLWLW,9,3,0,2,11,4,17,10,5,2,58.8,22,25,37.9
+7913,KS Lechia Gdańsk,10361,Ekstraklasa 15/16,15/16,LWWWL,9,3,0,2,4,6,10,8,1,1,80.0,24,30,41.7
+7918,Piast Gliwice,10361,Ekstraklasa 15/16,15/16,DDLWW,8,2,2,1,8,6,18,11,5,2,61.1,22,35,53.0
+3125,Górnik Łęczna,10361,Ekstraklasa 15/16,15/16,LWLDW,7,2,1,2,10,5,8,6,2,0,75.0,27,36,44.4
+3117,Pogoń Szczecin,10361,Ekstraklasa 15/16,15/16,LWDLW,7,2,1,2,6,10,8,3,5,0,37.5,25,32,42.7
+4901,Cracovia,10361,Ekstraklasa 15/16,15/16,WLWDL,7,2,1,2,7,7,13,8,4,1,61.5,26,39,50.0
+36851,Bruk-Bet Termalica Nieciecza,10361,Ekstraklasa 15/16,15/16,LDLDW,5,1,2,2,5,7,6,4,2,0,66.7,25,24,32.0
+7691,Jagiellonia Białystok,10361,Ekstraklasa 15/16,15/16,DDLWL,5,1,2,2,6,5,10,5,5,0,50.0,26,24,30.8
+3111,Wisła Kraków,10361,Ekstraklasa 15/16,15/16,DLWLL,4,1,1,3,10,9,15,8,4,3,53.3,28,30,35.7
+3121,Lech Poznań,10361,Ekstraklasa 15/16,15/16,WLLLL,3,1,0,4,3,6,12,5,6,1,41.7,24,18,25.0
+3105,Ruch Chorzów,10361,Ekstraklasa 15/16,15/16,LDLDL,2,0,2,3,2,13,9,6,3,0,66.7,26,28,35.9
+7919,Podbeskidzie Bielsko-Biała,10361,Ekstraklasa 15/16,15/16,DLLLD,2,0,2,3,8,15,7,1,3,3,14.3,28,19,22.6
+5065,MKS Korona Kielce,8206,Ekstraklasa 14/15,14/15,WWWWD,13,4,1,0,9,8,8,6,1,1,75.0,31,38,40.9
+3106,Legia Warszawa,8206,Ekstraklasa 14/15,14/15,WWWDW,13,4,1,0,5,0,11,6,5,0,54.5,19,18,31.6
+7918,Piast Gliwice,8206,Ekstraklasa 14/15,14/15,DWLWW,10,3,1,1,9,9,8,5,3,0,62.5,28,33,39.3
+7691,Jagiellonia Białystok,8206,Ekstraklasa 14/15,14/15,WDWWL,10,3,1,1,12,7,16,8,6,2,50.0,26,35,44.9
+3125,Górnik Łęczna,8206,Ekstraklasa 14/15,14/15,WLDWD,8,2,2,1,5,4,9,6,2,1,66.7,29,25,28.7
+4901,Cracovia,8206,Ekstraklasa 14/15,14/15,DWDLW,8,2,2,1,11,2,11,5,4,2,45.5,27,32,39.5
+3121,Lech Poznań,8206,Ekstraklasa 14/15,14/15,LDWDW,8,2,2,1,12,2,17,12,3,2,70.6,24,35,48.6
+3108,Śląsk Wrocław,8206,Ekstraklasa 14/15,14/15,WDWLL,7,2,1,2,5,5,7,6,1,0,85.7,26,37,47.4
+3105,Ruch Chorzów,8206,Ekstraklasa 14/15,14/15,WLDDD,6,1,3,1,8,7,9,7,2,0,77.8,25,31,41.3
+3117,Pogoń Szczecin,8206,Ekstraklasa 14/15,14/15,LDLDW,5,1,2,2,4,9,12,6,3,3,50.0,30,38,42.2
+7919,Podbeskidzie Bielsko-Biała,8206,Ekstraklasa 14/15,14/15,LWDLD,5,1,2,2,3,10,7,2,3,2,28.6,29,22,25.3
+3110,Górnik Zabrze,8206,Ekstraklasa 14/15,14/15,LDLWD,5,1,2,2,4,13,9,5,2,2,55.6,29,23,26.4
+3111,Wisła Kraków,8206,Ekstraklasa 14/15,14/15,WDLLL,4,1,1,3,3,6,12,4,5,3,33.3,30,35,38.9
+7913,KS Lechia Gdańsk,8206,Ekstraklasa 14/15,14/15,LLLDD,2,0,2,3,4,7,11,6,2,3,54.5,25,25,33.3
+3128,GKS Bełchatów,8206,Ekstraklasa 14/15,14/15,LLDDL,2,0,2,3,10,15,12,4,4,4,33.3,28,20,23.8
+35329,Zawisza Bydgoszcz,8206,Ekstraklasa 14/15,14/15,LLDLL,1,0,1,4,8,8,9,3,5,1,33.3,29,26,29.9
+7919,Podbeskidzie Bielsko-Biała,6261,Ekstraklasa 13/14,13/14,WWWWL,12,4,0,1,9,5,4,3,1,0,75.0,21,24,38.1
+5065,MKS Korona Kielce,6261,Ekstraklasa 13/14,13/14,DWWDW,11,3,2,0,9,13,4,2,0,2,50.0,29,36,41.4
+3111,Wisła Kraków,6261,Ekstraklasa 13/14,13/14,WWDWL,10,3,1,1,8,13,15,12,1,2,80.0,22,29,43.9
+7691,Jagiellonia Białystok,6261,Ekstraklasa 13/14,13/14,WLDWW,10,3,1,1,8,10,10,7,2,1,70.0,29,37,42.5
+3117,Pogoń Szczecin,6261,Ekstraklasa 13/14,13/14,WDWDD,9,2,3,0,1,5,12,5,5,2,41.7,28,38,45.2
+3106,Legia Warszawa,6261,Ekstraklasa 13/14,13/14,WDDDW,9,2,3,0,12,4,16,9,6,1,56.3,21,31,49.2
+7913,KS Lechia Gdańsk,6261,Ekstraklasa 13/14,13/14,DLWWD,8,2,2,1,8,3,9,5,4,0,55.6,23,23,33.3
+3108,Śląsk Wrocław,6261,Ekstraklasa 13/14,13/14,DWDLW,8,2,2,1,10,1,10,5,3,2,50.0,22,24,36.4
+3115,Widzew Łódź,6261,Ekstraklasa 13/14,13/14,WWLLL,6,2,0,3,6,6,8,7,0,1,87.5,33,28,28.3
+3121,Lech Poznań,6261,Ekstraklasa 13/14,13/14,LWLLW,6,2,0,3,7,5,17,12,5,0,70.6,26,37,47.4
+7918,Piast Gliwice,6261,Ekstraklasa 13/14,13/14,LLWDD,5,1,2,2,11,5,8,3,3,2,37.5,26,18,23.1
+3110,Górnik Zabrze,6261,Ekstraklasa 13/14,13/14,DDDDL,4,0,4,1,7,9,13,4,4,5,30.8,29,38,43.7
+3105,Ruch Chorzów,6261,Ekstraklasa 13/14,13/14,LLDLW,4,1,1,3,7,8,9,3,5,1,33.3,26,25,32.1
+4901,Cracovia,6261,Ekstraklasa 13/14,13/14,LLLDD,2,0,2,3,6,10,8,2,3,3,25.0,30,30,33.3
+35329,Zawisza Bydgoszcz,6261,Ekstraklasa 13/14,13/14,LDLDL,2,0,2,3,4,7,3,2,0,1,66.7,28,32,38.1
+3113,Zagłębie Lubin,6261,Ekstraklasa 13/14,13/14,LLLDL,1,0,1,4,1,10,10,6,1,3,60.0,30,28,31.1
+3106,Legia Warszawa,4634,Ekstraklasa 12/13,12/13,WWWWD,13,4,1,0,10,1,13,7,6,0,53.8,16,27,56.3
+3121,Lech Poznań,4634,Ekstraklasa 12/13,12/13,WWDLW,10,3,1,1,7,4,12,6,6,0,50.0,13,16,41.0
+3128,GKS Bełchatów,4634,Ekstraklasa 12/13,12/13,DLWWD,8,2,2,1,9,6,8,5,1,2,62.5,22,22,33.3
+3117,Pogoń Szczecin,4634,Ekstraklasa 12/13,12/13,WLWDD,8,2,2,1,8,6,10,6,2,2,60.0,23,20,29.0
+7691,Jagiellonia Białystok,4634,Ekstraklasa 12/13,12/13,WWDLD,8,2,2,1,2,12,9,4,3,2,44.4,23,29,42.0
+7918,Piast Gliwice,4634,Ekstraklasa 12/13,12/13,DWLDW,8,2,2,1,9,8,8,2,5,1,25.0,23,20,29.0
+3105,Ruch Chorzów,4634,Ekstraklasa 12/13,12/13,LLWDW,7,2,1,2,7,9,3,1,1,1,33.3,26,24,30.8
+3119,Polonia Warszawa,4634,Ekstraklasa 12/13,12/13,LLWDW,7,2,1,2,8,5,8,3,5,0,37.5,23,25,36.2
+5065,MKS Korona Kielce,4634,Ekstraklasa 12/13,12/13,LLWWL,6,2,0,3,6,6,6,6,0,0,100.0,23,26,37.7
+7919,Podbeskidzie Bielsko-Biała,4634,Ekstraklasa 12/13,12/13,DWDDL,6,1,3,1,8,6,11,2,6,3,18.2,26,17,21.8
+3111,Wisła Kraków,4634,Ekstraklasa 12/13,12/13,DDLLW,5,1,2,2,5,5,7,4,3,0,57.1,20,21,35.0
+3115,Widzew Łódź,4634,Ekstraklasa 12/13,12/13,DWLDL,5,1,2,2,3,9,9,5,3,1,55.6,22,21,31.8
+3108,Śląsk Wrocław,4634,Ekstraklasa 12/13,12/13,LLDWL,4,1,1,3,9,9,8,5,1,2,62.5,22,27,40.9
+3110,Górnik Zabrze,4634,Ekstraklasa 12/13,12/13,DDLDD,4,0,4,1,4,7,13,8,4,1,61.5,21,25,39.7
+7913,KS Lechia Gdańsk,4634,Ekstraklasa 12/13,12/13,DDLDL,3,0,3,2,10,8,11,3,6,2,27.3,22,21,31.8
+3113,Zagłębie Lubin,4634,Ekstraklasa 12/13,12/13,DDLLD,3,0,3,2,4,8,9,5,3,1,55.6,20,27,45.0
+3121,Lech Poznań,3411,Ekstraklasa 11/12,11/12,WWWDW,13,4,1,0,5,1,8,5,3,0,62.5,14,21,50.0
+3108,Śląsk Wrocław,3411,Ekstraklasa 11/12,11/12,DWWWW,13,4,1,0,8,4,11,7,3,1,63.6,19,25,43.9
+3128,GKS Bełchatów,3411,Ekstraklasa 11/12,11/12,LWDWW,10,3,1,1,6,6,6,4,0,2,66.7,23,22,31.9
+3110,Górnik Zabrze,3411,Ekstraklasa 11/12,11/12,LWWLW,9,3,0,2,7,4,11,8,2,1,72.7,20,25,41.7
+7691,Jagiellonia Białystok,3411,Ekstraklasa 11/12,11/12,WLWWL,9,3,0,2,6,8,8,8,0,0,100.0,24,33,45.8
+3119,Polonia Warszawa,3411,Ekstraklasa 11/12,11/12,WDLDW,8,2,2,1,3,8,9,5,2,2,55.6,20,22,36.7
+3111,Wisła Kraków,3411,Ekstraklasa 11/12,11/12,DLWDW,8,2,2,1,7,6,6,4,2,0,66.7,20,29,48.3
+3106,Legia Warszawa,3411,Ekstraklasa 11/12,11/12,WLLDW,7,2,1,2,3,4,13,5,6,2,38.5,13,11,28.2
+3105,Ruch Chorzów,3411,Ekstraklasa 11/12,11/12,WDLDL,5,1,2,2,7,3,10,6,3,1,60.0,20,32,53.3
+3115,Widzew Łódź,3411,Ekstraklasa 11/12,11/12,LDDWL,5,1,2,2,3,2,6,3,3,0,50.0,17,15,29.4
+3113,Zagłębie Lubin,3411,Ekstraklasa 11/12,11/12,WDLLD,5,1,2,2,10,4,7,3,3,1,42.9,22,16,24.2
+4901,Cracovia,3411,Ekstraklasa 11/12,11/12,WDLLL,4,1,1,3,3,7,4,3,1,0,75.0,23,26,37.7
+5065,MKS Korona Kielce,3411,Ekstraklasa 11/12,11/12,LDDDD,4,0,4,1,4,5,12,7,3,2,58.3,16,12,25.0
+3123,ŁKS Łódź,3411,Ekstraklasa 11/12,11/12,LLWDL,4,1,1,3,6,10,6,1,3,2,16.7,23,14,20.3
+7913,KS Lechia Gdańsk,3411,Ekstraklasa 11/12,11/12,LWDLL,4,1,1,3,5,5,7,3,3,1,42.9,19,15,26.3
+7919,Podbeskidzie Bielsko-Biała,3411,Ekstraklasa 11/12,11/12,LLLDL,1,0,1,4,3,9,5,1,3,1,20.0,20,10,16.7
+3106,Legia Warszawa,2737,Ekstraklasa 10/11,10/11,WDWWW,13,4,1,0,12,3,9,5,4,0,55.6,20,24,40.0
+3128,GKS Bełchatów,2737,Ekstraklasa 10/11,10/11,WWDLW,10,3,1,1,4,7,8,5,1,2,62.5,18,17,31.5
+3119,Polonia Warszawa,2737,Ekstraklasa 10/11,10/11,DLDWW,8,2,2,1,7,0,8,3,5,0,37.5,16,18,37.5
+3108,Śląsk Wrocław,2737,Ekstraklasa 10/11,10/11,WDLWD,8,2,2,1,13,6,6,4,1,1,66.7,19,27,47.4
+3111,Wisła Kraków,2737,Ekstraklasa 10/11,10/11,DDLWW,8,2,2,1,5,4,12,7,4,1,58.3,16,23,47.9
+5065,MKS Korona Kielce,2737,Ekstraklasa 10/11,10/11,LWLWD,7,2,1,2,4,11,5,3,2,0,60.0,22,18,27.3
+3110,Górnik Zabrze,2737,Ekstraklasa 10/11,10/11,WLWDL,7,2,1,2,10,4,10,6,3,1,60.0,21,17,27.0
+3115,Widzew Łódź,2737,Ekstraklasa 10/11,10/11,LWDWL,7,2,1,2,6,7,10,7,2,1,70.0,24,32,44.4
+3121,Lech Poznań,2737,Ekstraklasa 10/11,10/11,WDLWL,7,2,1,2,8,4,9,6,1,2,66.7,17,9,17.6
+7691,Jagiellonia Białystok,2737,Ekstraklasa 10/11,10/11,WLWLL,6,2,0,3,6,6,7,6,1,0,85.7,17,18,35.3
+4901,Cracovia,2737,Ekstraklasa 10/11,10/11,LWDLD,5,1,2,2,6,5,8,6,1,1,75.0,23,16,23.2
+5064,MZKS Arka Gdynia,2737,Ekstraklasa 10/11,10/11,LDWLD,5,1,2,2,4,14,6,5,0,1,83.3,22,16,24.2
+7913,KS Lechia Gdańsk,2737,Ekstraklasa 10/11,10/11,DLWLD,5,1,2,2,6,6,5,3,2,0,60.0,20,25,41.7
+3113,Zagłębie Lubin,2737,Ekstraklasa 10/11,10/11,DDDLD,4,0,4,1,5,7,5,4,0,1,80.0,21,26,41.3
+7692,Polonia Bytom,2737,Ekstraklasa 10/11,10/11,LDLDD,3,0,3,2,4,12,4,3,0,1,75.0,23,18,26.1
+3105,Ruch Chorzów,2737,Ekstraklasa 10/11,10/11,LDDLD,3,0,3,2,4,8,10,4,3,3,40.0,17,9,17.6
+3128,GKS Bełchatów,2275,Ekstraklasa 09/10,09/10,WWLWW,12,4,0,1,8,5,10,7,3,0,70.0,18,22,40.7
+5065,MKS Korona Kielce,2275,Ekstraklasa 09/10,09/10,WWWDD,11,3,2,0,7,3,8,4,2,2,50.0,22,20,30.3
+3121,Lech Poznań,2275,Ekstraklasa 09/10,09/10,WDWDW,11,3,2,0,12,2,13,9,4,0,69.2,14,22,52.4
+3108,Śląsk Wrocław,2275,Ekstraklasa 09/10,09/10,WDWDW,11,3,2,0,9,9,6,5,0,1,83.3,21,32,50.8
+7692,Polonia Bytom,2275,Ekstraklasa 09/10,09/10,WWLWL,9,3,0,2,4,6,9,6,1,2,66.7,21,19,30.2
+3114,MKS Odra Wodzisław Śląski,2275,Ekstraklasa 09/10,09/10,WDLWL,7,2,1,2,6,9,6,3,1,2,50.0,23,22,31.9
+3105,Ruch Chorzów,2275,Ekstraklasa 09/10,09/10,LDLWW,7,2,1,2,4,7,11,6,5,0,54.5,17,21,41.2
+3119,Polonia Warszawa,2275,Ekstraklasa 09/10,09/10,LWDWL,7,2,1,2,5,2,6,3,1,2,50.0,24,23,31.9
+5064,MZKS Arka Gdynia,2275,Ekstraklasa 09/10,09/10,LWWLL,6,2,0,3,7,8,8,2,2,4,25.0,24,19,26.4
+3111,Wisła Kraków,2275,Ekstraklasa 09/10,09/10,LWDDD,6,1,3,1,9,4,14,7,6,1,50.0,19,23,40.4
+7691,Jagiellonia Białystok,2275,Ekstraklasa 09/10,09/10,LLWLW,6,2,0,3,3,5,7,6,1,0,85.7,15,20,44.4
+4901,Cracovia,2275,Ekstraklasa 09/10,09/10,DLDLW,5,1,2,2,4,6,9,5,2,2,55.6,20,14,23.3
+7913,KS Lechia Gdańsk,2275,Ekstraklasa 09/10,09/10,WLLDL,4,1,1,3,4,6,9,2,5,2,22.2,21,17,27.0
+7918,Piast Gliwice,2275,Ekstraklasa 09/10,09/10,DLLDD,3,0,3,2,5,9,6,3,2,1,50.0,24,19,26.4
+3113,Zagłębie Lubin,2275,Ekstraklasa 09/10,09/10,LLWLL,3,1,0,4,6,8,7,1,2,4,14.3,21,15,23.8
+3106,Legia Warszawa,2275,Ekstraklasa 09/10,09/10,LLDLD,2,0,2,3,3,7,9,6,1,2,66.7,16,13,27.1
+3106,Legia Warszawa,1691,Ekstraklasa 08/09,08/09,WWWLW,12,4,0,1,9,4,12,7,4,1,58.3,13,16,41.0
+3111,Wisła Kraków,1691,Ekstraklasa 08/09,08/09,WDDWW,11,3,2,0,12,3,12,8,4,0,66.7,15,32,71.1
+3110,Górnik Zabrze,1691,Ekstraklasa 08/09,08/09,DWWLW,10,3,1,1,4,3,5,5,0,0,100.0,19,8,14.0
+4901,Cracovia,1691,Ekstraklasa 08/09,08/09,WLWLW,9,3,0,2,5,4,9,4,1,4,44.4,20,15,25.0
+3105,Ruch Chorzów,1691,Ekstraklasa 08/09,08/09,LWDLW,7,2,1,2,6,6,4,2,2,0,50.0,18,16,29.6
+3121,Lech Poznań,1691,Ekstraklasa 08/09,08/09,LWWDL,7,2,1,2,9,6,15,4,9,2,26.7,16,19,39.6
+5064,MZKS Arka Gdynia,1691,Ekstraklasa 08/09,08/09,WWDLL,7,2,1,2,8,9,5,3,2,0,60.0,22,23,34.8
+3123,ŁKS Łódź,1691,Ekstraklasa 08/09,08/09,WLDWL,7,2,1,2,4,7,7,4,3,0,57.1,20,17,28.3
+7918,Piast Gliwice,1691,Ekstraklasa 08/09,08/09,DDDWL,6,1,3,1,3,4,6,4,1,1,66.7,18,10,18.5
+7692,Polonia Bytom,1691,Ekstraklasa 08/09,08/09,LWLWL,6,2,0,3,5,9,5,4,1,0,80.0,23,14,20.3
+7691,Jagiellonia Białystok,1691,Ekstraklasa 08/09,08/09,DLWLD,5,1,2,2,4,9,8,6,0,2,75.0,21,19,30.2
+3108,Śląsk Wrocław,1691,Ekstraklasa 08/09,08/09,LLDDW,5,1,2,2,5,8,9,8,0,1,88.9,23,35,50.7
+3114,MKS Odra Wodzisław Śląski,1691,Ekstraklasa 08/09,08/09,LDLWD,5,1,2,2,5,8,7,4,2,1,57.1,20,15,25.0
+7913,KS Lechia Gdańsk,1691,Ekstraklasa 08/09,08/09,DDLWL,5,1,2,2,7,8,6,4,2,0,66.7,23,23,33.3
+3128,GKS Bełchatów,1691,Ekstraklasa 08/09,08/09,DLLLW,4,1,1,3,6,4,7,6,1,0,85.7,17,13,25.5
+3119,Polonia Warszawa,1691,Ekstraklasa 08/09,08/09,DLLWL,4,1,1,3,6,6,10,5,4,1,50.0,14,11,26.2
