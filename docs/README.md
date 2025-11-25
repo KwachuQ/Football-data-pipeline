@@ -94,23 +94,22 @@ To use SofaScore API you need an [API key](https://rapidapi.com/apidojo/api/sofa
 
 ### b) Incremental Update (only new matches after last recorded date)
 
-- Matches (API → Bronze → raw_matches in PostgreSQL):
+Run DAG: [00_incremental_pipeline_orchestrator](airflow/dags/00_incremental_pipeline_orchestrator.py)
+It will execute following process:
+
+- Matches (API → minIO → PostgreSQL):
   - [airflow/dags/01_bronze_extract_incremental_matches.py](airflow/dags/01_bronze_extract_incremental_matches.py)
   - [airflow/dags/02_bronze_load_incremental_matches.py](airflow/dags/02_bronze_load_incremental_matches.py)
-- Stats (API → Bronze → raw_stats in PostgreSQL):
+- Stats (API → minIO → PostgreSQL):
   - [airflow/dags/03_bronze_extract_incremental_stats.py](airflow/dags/03_bronze_extract_incremental_stats.py)
   - [airflow/dags/04_bronze_load_incremental_stats.py](airflow/dags/04_bronze_load_incremental_stats.py)
-- Silver staging (incremental):
+- Silver staging (PostgreSQL):
   - [airflow/dags/05_silver_stage_incremental.py](airflow/dags/05_silver_stage_incremental.py)
+- Silver transform (PostgreSQL):
+  - [airflow/dags/06_silver_transform_dbt.py](airflow/dags/06_silver_transform_dbt.py)
+- Gold transform (PostgreSQL):
+  - [airflow/dags/07_gold_transform_dbt.py](irflow/dags/07_gold_transform_dbt.py)
 
-### c) dbt (Silver → Gold)
-
-Run inside the `dbt` container:
-```sh
-docker exec -it dbt dbt deps
-docker exec -it dbt dbt run
-docker exec -it dbt dbt test
-```
 ## Analytical layer
 
 Metabase is included for BI exploration (service defined in [docker/docker-compose.yml](docker/docker-compose.yml)).
@@ -123,7 +122,7 @@ Initial setup:
   - DB name: dwh
   - User: airflow
   - Password: airflow
-- After running dbt ([dbt/dbt_project.yml](dbt/dbt_project.yml)) click Sync to load new tables (silver/gold schemas).
+- After running dbt ([dbt/dbt_project.yml](dbt/dbt_project.yml)) click Sync to load new tables (gold schemas).
 
 
 ## Security Notes
