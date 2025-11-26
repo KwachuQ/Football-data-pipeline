@@ -4,3 +4,5 @@ __pycache__/
 .env.local
 dbt_packages/
 logs/
+tests/
+*.code-workspace
