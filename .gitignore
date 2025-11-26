@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 .env
 .env.local
+*.code-workspace
 dbt_packages/
 logs/
 data-pipeline-sofascore.code-workspace
