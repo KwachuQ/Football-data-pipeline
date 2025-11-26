@@ -460,7 +460,7 @@ def main():
     # Get API key from environment
     api_key = os.getenv('RAPIDAPI_KEY')
     if not api_key:
-        logger.error("❌ RAPIDAPI_KEY environment variable not set!")
+        logger.error("RAPIDAPI_KEY environment variable not set!")
         sys.exit(1)
     
     try:

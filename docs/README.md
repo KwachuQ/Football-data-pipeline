@@ -7,6 +7,7 @@ End-to-end data pipeline for ingesting, modeling and serving Ekstraklasa footbal
 - [General Info](#general-info)
 - [Tech Stack](#tech-stack)
 - [Project Architecture & Code Structure](#project-architecture-and-code-structure)
+- [Configuration](#configuration)
 - [Quick Start](#quick-start)
 - [Data Flows](#data-flows)
 - [Security Notes](#security-notes)
@@ -79,7 +80,78 @@ To use SofaScore API you need an [API key](https://rapidapi.com/apidojo/api/sofa
    ```
    Scripts: [airflow/scripts/create_minio_conn.sh](airflow/scripts/create_minio_conn.sh), [airflow/scripts/create_minio_buckets.sh](airflow/scripts/create_minio_buckets.sh), [airflow/scripts/create_postgres_conn.sh](airflow/scripts/create_postgres_conn.sh)
 
-## Data Flows
+## Configuration
+
+### League Configuration
+
+The pipeline supports multiple European football leagues through a centralized configuration file: [config/league_config.yaml](config/league_config.yaml)
+
+**Supported Leagues:**
+- 🇵🇱 Poland: Ekstraklasa, Betclic 1. Liga
+- 🇪🇸 Spain: LaLiga, LaLiga 2
+- 🇩🇪 Germany: Bundesliga, 2. Bundesliga
+- 🇬🇧 England: Premier League, Championship
+- 🇮🇹 Italy: Serie A, Serie B
+- 🇫🇷 France: Ligue 1, Ligue 2
+- 🇵🇹 Portugal: Liga Portugal Betclic, Liga Portugal 2
+- 🇳🇱 Netherlands: Eredivisie, Eerste Divisie
+- Plus leagues from Norway, Sweden, Denmark, Austria, Czech Republic
+
+**Configuration Options:**
+
+```yaml
+# Select active league
+active_league:
+  country: "Poland"
+  country_id: 47
+  league_name: "Ekstraklasa"
+  league_id: 202
+
+# Select active season
+active_season:
+  name: "Ekstraklasa 25/26"
+  year: "25/26"
+  season_id: 76477
+
+# ETL parameters
+etl:
+  max_pages: 20                    # API pagination limit
+  batch_size: 50                   # Statistics batch size
+  
+# Date filtering (YYYY-MM-DD format, null = no limit)
+  start_date: "2024-08-01"         # Include matches from this date
+  end_date: "2024-12-31"           # Include matches up to this date
+
+# Incremental mode
+  last_extraction_date: null       # For daily updates (overrides start/end dates)
+  ```
+
+#### Configuration Examples:
+ 
+Full Historical Load (all available data):
+```yaml
+  start_date: null
+  end_date: null
+```
+
+Incremental Updates (only new matches):
+```yaml
+  last_extraction_date: "2025-01-15"  # Fetch matches after this date
+```
+
+Switch League (e.g., to LaLiga):
+```yaml
+  active_league:
+    country: "Spain"
+    league_name: "LaLiga"
+    league_id: 8
+  active_season:
+    name: "LaLiga 24/25"
+    season_id: 61643  # Use find_season_id.py
+```
+See config/league_config.yaml for complete documentation and examples.
+
+**Data Flows**
 
 ### a) Historical Backfill (full load – requires paid API plan)
 
