@@ -27,7 +27,7 @@ active_season:
 # Operational parameters for the extraction process
 etl:
   # Pagination settings
-  max_pages: 2              # Maximum API pages to scan during extraction
+  max_pages: 20             # Maximum API pages to scan during extraction
   batch_size: 50             # Number of matches to process in each batch for statistics extraction
   
   # Date Range Filtering
