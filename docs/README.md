@@ -193,12 +193,7 @@ Metabase is included for BI exploration (service defined in [docker/docker-compo
 
 Initial setup:
 - On first launch create admin account.
-- Add PostgreSQL database:
-  - Host: postgres
-  - Port: 5432
-  - DB name: dwh
-  - User: airflow
-  - Password: airflow
+- Add PostgreSQL database
 - After running dbt ([dbt/dbt_project.yml](dbt/dbt_project.yml)) click Sync to load new tables (gold schemas).
 
 In order to export gold layer tables to .csv file (to use with other data viz tools) run:
