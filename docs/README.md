@@ -99,34 +99,39 @@ The pipeline supports multiple European football leagues through a centralized c
 
 **Configuration Options:**
 
+
+Select active league
 ```yaml
-# Select active league
 active_league:
   country: "Poland"
   country_id: 47
   league_name: "Ekstraklasa"
   league_id: 202
-
-# Select active season
+```
+Select active season
+```yaml
 active_season:
   name: "Ekstraklasa 25/26"
   year: "25/26"
   season_id: 76477
-
-# ETL parameters
+```
+ETL parameters
+```yaml
 etl:
   max_pages: 20                    # API pagination limit
   batch_size: 50                   # Statistics batch size
-  
-# Date filtering (YYYY-MM-DD format, null = no limit)
+```  
+Date filtering (YYYY-MM-DD format, null = no limit)
+```yaml
   start_date: "2024-08-01"         # Include matches from this date
   end_date: "2024-12-31"           # Include matches up to this date
-
-# Incremental mode
+```
+Incremental mode
+```yaml
   last_extraction_date: null       # For daily updates (overrides start/end dates)
   ```
 
-#### Configuration Examples:
+### Configuration Examples:
  
 Full Historical Load (all available data):
 ```yaml
@@ -151,7 +156,7 @@ Switch League (e.g., to LaLiga):
 ```
 See config/league_config.yaml for complete documentation and examples.
 
-**Data Flows**
+## Data Flows
 
 ### a) Historical Backfill (full load – requires paid API plan)
 
@@ -201,9 +206,26 @@ In order to export gold layer tables to .csv file (to use with other data viz to
    
 ## Security Notes
 
-- Change default passwords before production.
-- Use environment variables / secret managers for credentials.
-- Enable HTTPS and schedule regular backups.
+1. **Change ALL default passwords:**
+   - PostgreSQL: `airflow:airflow`
+   - MinIO: `minio:minio123`
+   - Airflow: `airflow:airflow`
+
+2. **Secure API credentials:**
+   - Store `RAPIDAPI_KEY` in environment variables or secret manager
+   - Never commit API keys to version control
+
+3. **Use .env file for local development:**
+   ```bash
+   cp docker/.env.example docker/.env
+   # Edit docker/.env with your credentials
+   ```
+
+4. **For production:**
+   - Use Docker secrets
+   - Enable HTTPS/TLS for all services
+   - Configure proper firewall rules
+   - Use strong, unique passwords
 
 ## License
 
