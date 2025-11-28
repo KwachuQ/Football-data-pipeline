@@ -3,7 +3,6 @@ from airflow import DAG
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.operators.python import PythonOperator
 from airflow.operators.empty import EmptyOperator
-from airflow.sensors.external_task import ExternalTaskSensor
 import logging
 
 default_args = {
@@ -80,7 +79,6 @@ with DAG(
         wait_for_completion=True,
         poke_interval=30,
         reset_dag_run=True,
-        execution_date='{{ ds }}',
         allowed_states=['success'],
         failed_states=['failed', 'skipped']
     )
@@ -100,7 +98,6 @@ with DAG(
         wait_for_completion=True,
         poke_interval=30,
         reset_dag_run=True,
-        execution_date='{{ ds }}',
         allowed_states=['success'],
         failed_states=['failed', 'skipped']
     )
@@ -120,7 +117,6 @@ with DAG(
         wait_for_completion=True,
         poke_interval=30,
         reset_dag_run=True,
-        execution_date='{{ ds }}',
         allowed_states=['success'],
         failed_states=['failed', 'skipped']
     )
@@ -140,7 +136,6 @@ with DAG(
         wait_for_completion=True,
         poke_interval=30,
         reset_dag_run=True,
-        execution_date='{{ ds }}',
         allowed_states=['success'],
         failed_states=['failed', 'skipped']
     )
@@ -160,7 +155,6 @@ with DAG(
         wait_for_completion=True,
         poke_interval=30,
         reset_dag_run=True,
-        execution_date='{{ ds }}',
         allowed_states=['success'],
         failed_states=['failed', 'skipped']
     )
@@ -180,7 +174,6 @@ with DAG(
         wait_for_completion=True,
         poke_interval=30,
         reset_dag_run=True,
-        execution_date='{{ ds }}',
         allowed_states=['success'],
         failed_states=['failed', 'skipped']
     )
@@ -200,7 +193,6 @@ with DAG(
         wait_for_completion=True,
         poke_interval=30,
         reset_dag_run=True,
-        execution_date='{{ ds }}',
         allowed_states=['success'],
         failed_states=['failed', 'skipped']
     )
