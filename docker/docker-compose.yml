@@ -74,6 +74,12 @@ services:
         condition: service_started
     command: >
       bash -c '
+        if [ ! -d "dbt_packages" ]; then
+          echo "[INFO] Installing dbt dependencies..."
+          dbt deps --profiles-dir /opt/dbt/profiles
+        else
+          echo "[INFO] dbt packages already installed"
+        fi
         echo "[INFO] dbt container started - ready for commands"
         sleep infinity
       '
