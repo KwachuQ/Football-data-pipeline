@@ -362,7 +362,7 @@ def trigger_dbt_full_load(**context):
     """Trigger dbt full load refresh for matches"""
     logging.info("Triggering dbt full load refresh for matches...")
     
-    cmd = 'docker exec dbt bash -c "cd /opt/dbt/project && dbt run --models matches_full_data_load --full-refresh"'
+    cmd = 'docker exec dbt bash -c "cd /opt/dbt/project && dbt run --select matches_full_data_load --full-refresh --profiles-dir /opt/dbt/profiles"'
     
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=600)
     
