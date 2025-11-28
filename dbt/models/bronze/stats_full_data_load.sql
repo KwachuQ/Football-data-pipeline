@@ -1,10 +1,13 @@
 {{
   config(
-    enabled=false,
-    materialized='table',
+    enabled=true,
+    materialized='incremental',
     database='dwh',
     schema='bronze',
     alias='full_stats_data',
+    unique_key=['match_id', 'period', 'group_name', 'statistic_key'],
+    on_schema_change='fail',
+    incremental_strategy='merge',
     indexes=[
       {'columns': ['match_id', 'period', 'group_name', 'statistic_key'], 'unique': True},
       {'columns': ['tournament_id', 'season_id']},
@@ -16,7 +19,30 @@
 }}
 
 WITH source_data AS (
-    SELECT * FROM {{ source('bronze', 'raw_stats') }}
+    SELECT 
+        rs.match_id,
+        rs.tournament_id,
+        rs.file_path,
+        rs.batch_id,
+        rs.ingestion_timestamp,
+        rs.data,
+        -- Get season_id directly from raw_matches to avoid dependency on full_matches_data
+        (
+            SELECT (rm.data->'season'->>'id')::INTEGER 
+            FROM {{ source('bronze', 'raw_matches') }} rm 
+            WHERE rm.match_id = rs.match_id 
+            LIMIT 1
+        ) as season_id
+    FROM {{ source('bronze', 'raw_stats') }} rs
+    WHERE rs.data IS NOT NULL
+      AND rs.data->'statistics' IS NOT NULL
+    {% if is_incremental() %}
+        -- Only process stats for matches not already in the target table
+        AND rs.match_id NOT IN (
+            SELECT DISTINCT match_id
+            FROM {{ this }}
+        )
+    {% endif %}
 ),
 
 -- Flatten the statistics structure
@@ -55,8 +81,6 @@ flattened_stats AS (
     CROSS JOIN LATERAL jsonb_array_elements(data->'statistics') as stat_period(value)
     CROSS JOIN LATERAL jsonb_array_elements(stat_period.value->'groups') as stat_group(value)
     CROSS JOIN LATERAL jsonb_array_elements(stat_group.value->'statisticsItems') as stat_item(value)
-    WHERE data IS NOT NULL
-      AND data->'statistics' IS NOT NULL
 ),
 
 -- Calculate match-level aggregations
@@ -160,9 +184,9 @@ transformed_stats AS (
         -- Original data reference
         f.original_data,
         
-        -- Audit columns (consistent with matches)
+        -- Audit columns - don't overwrite created_at on merge
         f.ingestion_timestamp,
-        CURRENT_TIMESTAMP as created_at,
+        NULL::TIMESTAMP WITH TIME ZONE as created_at,
         CURRENT_TIMESTAMP as updated_at
         
     FROM flattened_stats f

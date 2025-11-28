@@ -1,10 +1,13 @@
 {{
   config(
-    enabled=false,
-    materialized='table',
+    enabled=true,
+    materialized='incremental',
     database='dwh',
     schema='bronze',
     alias='full_matches_data',
+    unique_key='match_id',
+    on_schema_change='fail',
+    incremental_strategy='merge',
     indexes=[
       {'columns': ['match_id'], 'unique': True},
       {'columns': ['start_timestamp']},
@@ -17,6 +20,14 @@
 
 WITH source_data AS (
     SELECT * FROM {{ source('bronze', 'raw_matches') }}
+    WHERE data IS NOT NULL
+    {% if is_incremental() %}
+        -- Only process matches not already in the target table
+        AND (data->>'id')::INTEGER NOT IN (
+            SELECT DISTINCT match_id
+            FROM {{ this }}
+        )
+    {% endif %}
 ),
 
 transformed_matches AS (
@@ -89,12 +100,11 @@ transformed_matches AS (
         data->'_metadata'->>'batch_id' as batch_id,
         (data->'_metadata'->>'ingestion_timestamp')::TIMESTAMP as ingestion_timestamp,
         
-        -- Audit columns
-        CURRENT_TIMESTAMP as created_at,
+        -- Audit columns - don't overwrite created_at on merge
+        NULL::TIMESTAMP WITH TIME ZONE as created_at,
         CURRENT_TIMESTAMP as updated_at
         
     FROM source_data
-    WHERE data IS NOT NULL
 )
 
 SELECT * FROM transformed_matches
