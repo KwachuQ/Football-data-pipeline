@@ -11,7 +11,7 @@ default_args = {
     'start_date': datetime(2025, 1, 1),
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 0,  # Orchestrator should not retry - individual DAGs handle retries
+    'retries': 0, 
     'retry_delay': timedelta(minutes=5),
 }
 
@@ -80,7 +80,7 @@ with DAG(
         poke_interval=30,
         reset_dag_run=True,
         allowed_states=['success'],
-        failed_states=['failed', 'skipped']
+        failed_states=['failed']
     )
     
     log_extract_matches_done = PythonOperator(
@@ -99,7 +99,7 @@ with DAG(
         poke_interval=30,
         reset_dag_run=True,
         allowed_states=['success'],
-        failed_states=['failed', 'skipped']
+        failed_states=['failed']
     )
     
     log_load_matches_done = PythonOperator(
@@ -118,7 +118,7 @@ with DAG(
         poke_interval=30,
         reset_dag_run=True,
         allowed_states=['success'],
-        failed_states=['failed', 'skipped']
+        failed_states=['failed']
     )
     
     log_extract_stats_done = PythonOperator(
@@ -137,7 +137,7 @@ with DAG(
         poke_interval=30,
         reset_dag_run=True,
         allowed_states=['success'],
-        failed_states=['failed', 'skipped']
+        failed_states=['failed']
     )
     
     log_load_stats_done = PythonOperator(
@@ -156,7 +156,7 @@ with DAG(
         poke_interval=30,
         reset_dag_run=True,
         allowed_states=['success'],
-        failed_states=['failed', 'skipped']
+        failed_states=['failed']
     )
     
     log_silver_staging_done = PythonOperator(
@@ -175,7 +175,7 @@ with DAG(
         poke_interval=30,
         reset_dag_run=True,
         allowed_states=['success'],
-        failed_states=['failed', 'skipped']
+        failed_states=['failed']
     )
     
     log_silver_transform_done = PythonOperator(
@@ -194,7 +194,7 @@ with DAG(
         poke_interval=30,
         reset_dag_run=True,
         allowed_states=['success'],
-        failed_states=['failed', 'skipped']
+        failed_states=['failed']
     )
     
     log_gold_transform_done = PythonOperator(
