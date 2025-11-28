@@ -380,7 +380,7 @@ def trigger_dbt_stats_incremental(**context):
     """Trigger dbt incremental refresh for statistics"""
     print("Triggering dbt stats incremental refresh...")
     
-    cmd = 'docker exec dbt bash -c "cd /opt/dbt/project && dbt run --select stats_full_data_incremental"'
+    cmd = 'docker exec dbt bash -c "cd /opt/dbt/project && dbt run --select stats_full_data_incremental --profiles-dir /opt/dbt/profiles"'
     
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=600)
     

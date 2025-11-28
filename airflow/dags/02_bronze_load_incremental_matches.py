@@ -316,7 +316,7 @@ def trigger_dbt_incremental(**context):
     """Uruchamia dbt incremental refresh"""
     print("🔄 Triggering dbt incremental refresh...")
     
-    cmd = 'docker exec dbt bash -c "cd /opt/dbt/project && dbt run --models bronze.matches_full_data_incremental"'
+    cmd = 'docker exec dbt bash -c "cd /opt/dbt/project && dbt run --select bronze.matches_full_data_incremental --profiles-dir /opt/dbt/profiles"'
     
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=600)
     
