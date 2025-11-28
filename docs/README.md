@@ -71,14 +71,11 @@ To use SofaScore API you need an [API key](https://rapidapi.com/apidojo/api/sofa
    - PostgreSQL: `localhost:5432` (db: `dwh`, user: `airflow`, pass: `airflow`)
    - Metabase: http://localhost:3000
 
-3. Initialize MinIO buckets & Airflow connections (if not already done):
-   ```sh
-   # inside airflow-webserver container (or via docker exec)
-   bash airflow/scripts/create_minio_conn.sh
-   bash airflow/scripts/create_minio_buckets.sh
-   bash airflow/scripts/create_postgres_conn.sh
-   ```
-   Scripts: [airflow/scripts/create_minio_conn.sh](airflow/scripts/create_minio_conn.sh), [airflow/scripts/create_minio_buckets.sh](airflow/scripts/create_minio_buckets.sh), [airflow/scripts/create_postgres_conn.sh](airflow/scripts/create_postgres_conn.sh)
+3. Configure [`league_config.yaml`](../config/league_config.yaml) file (see: [Configuration](#configuration)) to define from which league/seasons/dates download match data from API.
+
+4. Run master DAG: [`00_historical_pipeline_orchestrator`](../airflow/dags/00_historical_pipeline_orchestrator.py) (from Airflow UI)
+
+5. Run Metabase to start exploring or [`export_gold_tables.sh`](../airflow/scripts/export_gold_tables.sh) to get .csv files in "data" folder.
 
 ## Configuration
 
@@ -158,34 +155,63 @@ See config/league_config.yaml for complete documentation and examples.
 
 ## Data Flows
 
-### a) Historical Backfill (full load – requires paid API plan)
+### a) Historical Backfill (full load – requires paid API plan over 500 requests per month)
 
-- Matches (API → Bronze → raw_matches in PostgreSQL):
-  - [airflow/dags/bronze_backfill_historical.py](airflow/dags/bronze_backfill_historical.py)
-  - [airflow/dags/bronze_load_historical_matches.py](airflow/dags/bronze_load_historical_matches.py)
-- Stats (API → Bronze → raw_stats in PostgreSQL):
-  - [airflow/dags/bronze_extract_historical_stats.py](airflow/dags/bronze_extract_historical_stats.py)
-  - [airflow/dags/bronze_load_historical_stats.py](airflow/dags/bronze_load_historical_stats.py)
-- Silver staging (full):
-  - [airflow/dags/silver_stage_full.py](airflow/dags/silver_stage_full.py)
+Run master DAG: [`00_historical_pipeline_orchestrator`](airflow/dags/00_historical_pipeline_orchestrator.py)
+
+This orchestrator executes the complete historical data pipeline in the following sequence:
+
+**Step 1: Extract Historical Matches**
+- [`10_bronze_extract_historical_matches`](airflow/dags/10_extract_historical_matches.py) - Extract matches from API to MinIO
+
+**Step 2: Load Matches to Bronze**
+- [`11_bronze_load_historical_matches`](airflow/dags/11_bronze_load_historical_matches.py) - Load matches from MinIO to PostgreSQL bronze layer
+- Includes automatic dbt refresh of `bronze.full_matches_data`
+
+**Step 3: Extract Historical Statistics**
+- [`12_bronze_extract_historical_stats`](airflow/dags/12_bronze_extract_historical_stats.py) - Extract statistics for historical matches from API to MinIO
+
+**Step 4: Load Statistics to Bronze**
+- [`13_bronze_load_historical_stats`](airflow/dags/13_bronze_load_historical_stats.py) - Load statistics from MinIO to PostgreSQL bronze layer
+- Includes automatic dbt refresh of `bronze.full_stats_data`
+
+**Step 5: Create Silver Staging Tables**
+- [`14_silver_stage_full`](airflow/dags/14_silver_stage_full.py) - Create and populate `silver.staging_matches` and `silver.staging_stats`
+
+**Step 6: Transform Silver Layer**
+- [`06_silver_transform_dbt`](airflow/dags/06_silver_transform_dbt.py) - Run dbt models for silver layer transformations
+
+**Step 7: Transform Gold Layer**
+- [`07_gold_transform_dbt`](airflow/dags/07_gold_transform_dbt.py) - Run dbt models for gold layer analytics marts
 
 ### b) Incremental Update (only new matches after last recorded date)
 
-Run DAG: [00_incremental_pipeline_orchestrator](airflow/dags/00_incremental_pipeline_orchestrator.py)
-It will execute following process:
+Run master DAG: [`00_incremental_pipeline_orchestrator`](airflow/dags/00_incremental_pipeline_orchestrator.py)
 
-- Matches (API → minIO → PostgreSQL):
-  - [airflow/dags/01_bronze_extract_incremental_matches.py](airflow/dags/01_bronze_extract_incremental_matches.py)
-  - [airflow/dags/02_bronze_load_incremental_matches.py](airflow/dags/02_bronze_load_incremental_matches.py)
-- Stats (API → minIO → PostgreSQL):
-  - [airflow/dags/03_bronze_extract_incremental_stats.py](airflow/dags/03_bronze_extract_incremental_stats.py)
-  - [airflow/dags/04_bronze_load_incremental_stats.py](airflow/dags/04_bronze_load_incremental_stats.py)
-- Silver staging (PostgreSQL):
-  - [airflow/dags/05_silver_stage_incremental.py](airflow/dags/05_silver_stage_incremental.py)
-- Silver transform (PostgreSQL):
-  - [airflow/dags/06_silver_transform_dbt.py](airflow/dags/06_silver_transform_dbt.py)
-- Gold transform (PostgreSQL):
-  - [airflow/dags/07_gold_transform_dbt.py](irflow/dags/07_gold_transform_dbt.py)
+This orchestrator executes the incremental pipeline in the following sequence:
+
+**Step 1: Extract New Matches**
+- [`01_bronze_extract_incremental_matches`](airflow/dags/01_bronze_extract_incremental_matches.py) - Extract new matches from API to MinIO
+
+**Step 2: Load Matches to Bronze**
+- [`02_bronze_load_incremental_matches`](airflow/dags/02_bronze_load_incremental_matches.py) - Load new matches from MinIO to PostgreSQL
+- Includes automatic dbt incremental refresh
+
+**Step 3: Extract Statistics**
+- [`03_bronze_extract_incremental_stats`](airflow/dags/03_bronze_extract_incremental_stats.py) - Extract statistics for new matches from API to MinIO
+
+**Step 4: Load Statistics to Bronze**
+- [`04_bronze_load_incremental_stats`](airflow/dags/04_bronze_load_incremental_stats.py) - Load new statistics from MinIO to PostgreSQL
+- Includes automatic dbt incremental refresh
+
+**Step 5: Update Silver Staging**
+- [`05_silver_stage_incremental`](airflow/dags/05_silver_stage_incremental.py) - Incrementally update staging tables
+
+**Step 6: Transform Silver Layer**
+- [`06_silver_transform_dbt`](airflow/dags/06_silver_transform_dbt.py) - Run dbt models for silver layer
+
+**Step 7: Transform Gold Layer**
+- [`07_gold_transform_dbt`](airflow/dags/07_gold_transform_dbt.py) - Run dbt models for gold layer
 
 ## Analytical layer
 
