@@ -129,7 +129,7 @@ services:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/dwh
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
-      AIRFLOW__CORE__FERNET_KEY: "7A5cnRpnvL-b6pZcIiWbiQGxfIjlSPAmyyd6uIyggA8="
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
       # Ograniczenie presji RAM w LocalExecutor
       AIRFLOW__CORE__PARALLELISM: "2"
       AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: "1"
@@ -145,7 +145,7 @@ services:
       # Execution API configuration - fix for scheduler connection issues
       AIRFLOW__CORE__EXECUTION_API_SERVER_URL: "http://airflow_webserver:8080/execution/"
       # JWT secret for API authentication (Airflow 3.0 format)
-      AIRFLOW__API_AUTH__JWT_SECRET: "4mHVuNV&%8SauZs7!^wJtB"
+      AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW__API_AUTH__JWT_SECRET}
     volumes:
       - ../airflow/dags:/opt/airflow/dags
       - ../airflow/logs:/opt/airflow/logs
