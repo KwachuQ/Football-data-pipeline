@@ -63,10 +63,10 @@ To use SofaScore API you need an [API key](https://rapidapi.com/apidojo/api/sofa
 1. Start services:
    ```sh
    cd docker
-chmod +x init_secrets.sh
-./init_secrets.sh
-# Edit .env to add your RAPIDAPI_KEY
-docker-compose up -d
+  chmod +x init_secrets.sh
+  ./init_secrets.sh
+  # Edit .env to add your RAPIDAPI_KEY
+  docker-compose up -d
    ```
 2. Access endpoints:
    - Airflow UI: http://localhost:8080 (user: `airflow`, pass: `airflow`)
