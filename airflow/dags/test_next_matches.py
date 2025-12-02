@@ -62,7 +62,7 @@ else:
         if 'NEXT_MATCHES_TEST:SUCCESS' not in result.stdout:
             raise Exception(f"Test did not succeed: {result.stdout}")
             
-        print("✅ Next matches fetcher test successful")
+        print("Next matches fetcher test successful")
         
     except subprocess.TimeoutExpired:
         raise Exception("Test timeout")
@@ -71,7 +71,7 @@ else:
 with DAG(
     'test_next_matches',
     default_args=default_args,
-    schedule_interval=None,
+    schedule=None,
     catchup=False,
     tags=['test', 'next_matches'],
 ) as dag:

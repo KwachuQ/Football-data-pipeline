@@ -91,7 +91,7 @@ with DAG(
     '08_bronze_extract_next_matches',
     default_args=default_args,
     description='Extract next matches for tournament',
-    schedule_interval='0 6 * * *',  # Run daily at 6 AM UTC
+    schedule=None, 
     catchup=False,
     tags=['bronze', 'next_matches', 'extraction'],
 ) as dag:
@@ -99,4 +99,4 @@ with DAG(
     fetch_matches = PythonOperator(
         task_id='fetch_next_matches',
         python_callable=fetch_next_matches
-    )
+    )       
