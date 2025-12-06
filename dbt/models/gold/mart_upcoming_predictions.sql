@@ -50,26 +50,21 @@ team_form as (
         goals_against_last_5
     from {{ ref('mart_team_form') }}
 ),
-matches_to_predict as (
+upcoming_matches as (
     select
-        fm.match_id,
-        fm.match_date,
-        fm.season_id,
-        fm.season_name,
-        fm.season_year,
-        fm.home_team_id,
-        fm.home_team_name,
-        fm.away_team_id,
-        fm.away_team_name,
-        fm.tournament_id,
-        fm.tournament_name,
-        fm.status_type,
-        fm.home_score,
-        fm.away_score,
-        fm.winner_code
-    from {{ ref('fact_match') }} fm
-    where fm.status_type = 'finished'
-        and fm.match_date >= current_date - interval '90 days'  -- Last 90 days for validation
+        match_id,
+        start_timestamp as match_date,
+        season_id,
+        season_name,
+        season_year,
+        home_team_id,
+        home_team_name,
+        away_team_id,
+        away_team_name,
+        tournament_name,
+        status_type
+    from {{ ref('mart_upcoming_fixtures') }}
+    where status_type = 'notstarted'
 ),
 base_predictions as (
     select
@@ -84,9 +79,6 @@ base_predictions as (
         mp.away_team_name,
         mp.tournament_name,
         mp.status_type,
-        mp.home_score,
-        mp.away_score,
-        mp.winner_code,
         
         -- Home team features
         coalesce(hs.avg_home_goals_scored, 0) as home_avg_goals_scored_home,
@@ -120,7 +112,7 @@ base_predictions as (
         coalesce(hs.home_draw_rate, 0.33) as raw_home_draw_rate,
         coalesce(as_.away_draw_rate, 0.33) as raw_away_draw_rate
         
-    from matches_to_predict mp
+    from upcoming_matches mp
     left join team_home_stats hs 
         on mp.home_team_id = hs.team_id 
         and mp.season_id = hs.season_id
@@ -192,7 +184,6 @@ form_adjusted as (
 final_normalized as (
     select
         *,
-        -- Normalize to ensure probabilities sum to 1
         combined_home_prob / nullif(combined_home_prob + combined_away_prob + combined_draw_prob, 0) as norm_home_prob,
         combined_draw_prob / nullif(combined_home_prob + combined_away_prob + combined_draw_prob, 0) as norm_draw_prob,
         combined_away_prob / nullif(combined_home_prob + combined_away_prob + combined_draw_prob, 0) as norm_away_prob
@@ -210,30 +201,6 @@ select
     away_team_name,
     tournament_name,
     
-    -- Home team features
-    home_avg_goals_scored_home,
-    home_avg_goals_conceded_home,
-    home_avg_xg_home,
-    home_avg_shots_on_target_home,
-    home_avg_possession_home,
-    home_win_rate_home,
-    home_points_last_5,
-    home_wins_last_5,
-    home_goals_for_last_5,
-    home_goals_against_last_5,
-    
-    -- Away team features
-    away_avg_goals_scored_away,
-    away_avg_goals_conceded_away,
-    away_avg_xg_away,
-    away_avg_shots_on_target_away,
-    away_avg_possession_away,
-    away_win_rate_away,
-    away_points_last_5,
-    away_wins_last_5,
-    away_goals_for_last_5,
-    away_goals_against_last_5,
-    
     -- Predicted scores
     predicted_home_goals,
     predicted_away_goals,
@@ -246,12 +213,12 @@ select
         else 'BALANCED'
     end as match_outlook,
     
-    -- Normalized probabilities (guaranteed to sum to 100%)
+    -- Probabilities
     round(coalesce(norm_home_prob, 0.33) * 100, 1) as home_win_probability,
     round(coalesce(norm_draw_prob, 0.33) * 100, 1) as draw_probability,
     round(coalesce(norm_away_prob, 0.33) * 100, 1) as away_win_probability,
     
-    -- Fair odds (inverse of probability)
+    -- Fair odds
     case 
         when norm_home_prob > 0.01 then round(1 / norm_home_prob, 2)
         else 99.99
@@ -265,28 +232,7 @@ select
         else 99.99
     end as away_win_fair_odds,
     
-    -- Actual results for validation
-    home_score as actual_home_score,
-    away_score as actual_away_score,
-    case 
-        when home_score > away_score then 'HOME_WIN'
-        when home_score < away_score then 'AWAY_WIN'
-        when home_score = away_score then 'DRAW'
-        else 'UNKNOWN'
-    end as actual_result,
-    
-    -- Prediction accuracy metrics
-    case 
-        when (norm_home_prob > norm_draw_prob and norm_home_prob > norm_away_prob and home_score > away_score) then true
-        when (norm_draw_prob > norm_home_prob and norm_draw_prob > norm_away_prob and home_score = away_score) then true
-        when (norm_away_prob > norm_home_prob and norm_away_prob > norm_draw_prob and home_score < away_score) then true
-        else false
-    end as prediction_correct,
-    
-    abs(predicted_home_goals - home_score) as home_goals_error,
-    abs(predicted_away_goals - away_score) as away_goals_error,
-    
     current_timestamp as created_at
 
 from final_normalized
-order by match_date desc
+order by match_date asc
