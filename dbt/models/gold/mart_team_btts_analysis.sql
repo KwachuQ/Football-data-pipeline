@@ -47,7 +47,7 @@ team_overall_stats as (
         sum(case when is_win = 1 then 1 else 0 end)::numeric / nullif(count(*), 0) * 100 as win_pct,
         
         -- Goals
-        round(avg(goals_for), 2) as avg_goals_per_match,
+        round(avg(goals_for + goals_against), 2) as avg_goals_per_match,
         round(avg(goals_for), 2) as avg_scored,
         round(avg(goals_against), 2) as avg_conceded,
         

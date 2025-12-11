@@ -48,9 +48,15 @@ team_stats as (
         coalesce(ftm.stat_groundduelspercentage, 0) as ground_duels_pct,
         coalesce(ftm.stat_duelwonpercent, 0) as duels_won_pct,
         coalesce(ftm.stat_errorsleadtogoal, 0) as errors_lead_to_goal,
-        coalesce(ftm.stat_errorsleadtoshot, 0) as errors_lead_to_shot
+        coalesce(ftm.stat_errorsleadtoshot, 0) as errors_lead_to_shot,
+        -- Get opponent's xG as xGA
+        coalesce(ftm_opponent.stat_expectedgoals, 0) as xg_against
     from {{ ref('fact_team_match') }} ftm
     join {{ ref('fact_match') }} fm on ftm.match_id = fm.match_id
+    left join {{ ref('fact_team_match') }} ftm_opponent 
+        on fm.match_id = ftm_opponent.match_id 
+        and ftm_opponent.period = 'ALL'
+        and ftm_opponent.team_id != ftm.team_id
     where ftm.period = 'ALL'
         and fm.status_type = 'finished'
 ),
@@ -75,7 +81,8 @@ combined as (
         coalesce(ts.ground_duels_pct, 0) as ground_duels_pct,
         coalesce(ts.duels_won_pct, 0) as duels_won_pct,
         coalesce(ts.errors_lead_to_goal, 0) as errors_lead_to_goal,
-        coalesce(ts.errors_lead_to_shot, 0) as errors_lead_to_shot
+        coalesce(ts.errors_lead_to_shot, 0) as errors_lead_to_shot,
+        coalesce(ts.xg_against, 0) as xg_against
     from all_matches am
     left join team_stats ts 
         on am.match_id = ts.match_id 
@@ -91,6 +98,10 @@ select
     count(distinct match_id) as matches_played,
     sum(goals_conceded) as total_goals_conceded,
     round(avg(goals_conceded), 2) as goals_conceded_per_game,
+    sum(xg_against) as total_xga,
+    round(avg(xg_against), 2) as xga_per_game,
+    round(sum(goals_conceded) - sum(xg_against), 2) as xga_difference,
+    round((avg(goals_conceded) - avg(xg_against)), 2) as xga_difference_per_game,
     sum(clean_sheet) as clean_sheets,
     round(sum(clean_sheet)::numeric / count(distinct match_id)::numeric * 100, 1) as clean_sheet_pct,
     sum(goalkeeper_saves) as total_saves,
