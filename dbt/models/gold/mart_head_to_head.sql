@@ -15,7 +15,8 @@ with h2h_matches as (
         fm.away_score,
         fm.winner_code,
         least(fm.home_team_id, fm.away_team_id) as team_id_1,
-        greatest(fm.home_team_id, fm.away_team_id) as team_id_2
+        greatest(fm.home_team_id, fm.away_team_id) as team_id_2,
+        fm.home_score + fm.away_score as total_goals
     from {{ ref('fact_match') }} fm
     where fm.status_type = 'finished'
 ),
@@ -56,6 +57,15 @@ select
     sum(case when h.home_team_id = h.team_id_2 then h.home_score else h.away_score end) as team_2_goals,
     round(avg(case when h.home_team_id = h.team_id_1 then h.home_score else h.away_score end), 2) as team_1_avg_goals,
     round(avg(case when h.home_team_id = h.team_id_2 then h.home_score else h.away_score end), 2) as team_2_avg_goals,
+    
+    -- Over/Under stats
+    round(sum(case when h.total_goals > 1.5 then 1 else 0 end)::numeric / nullif(count(*), 0) * 100, 1) as over_15_pct,
+    round(sum(case when h.total_goals > 2.5 then 1 else 0 end)::numeric / nullif(count(*), 0) * 100, 1) as over_25_pct,
+    round(sum(case when h.total_goals > 3.5 then 1 else 0 end)::numeric / nullif(count(*), 0) * 100, 1) as over_35_pct,
+    
+    -- BTTS stats
+    round(sum(case when h.home_score > 0 and h.away_score > 0 then 1 else 0 end)::numeric / nullif(count(*), 0) * 100, 1) as btts_pct,
+    
     max(h.match_date) as last_meeting_date,
     l5.last_5_results
 from h2h_matches h
