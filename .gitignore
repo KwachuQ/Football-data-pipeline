@@ -7,3 +7,6 @@ dbt_packages/
 logs/
 tests/__pycache__/
 tests/
+backup/
+aws_rds_snc/
+/dbt/target/
