@@ -1,7 +1,7 @@
 {{ config(
     materialized='table',
     post_hook=[
-        "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_fixtures_dates ON {{ this }}(start_timestamp);"]
+        "CREATE INDEX IF NOT EXISTS idx_fixtures_dates ON {{ this }}(start_timestamp);"]
         ) 
         }}
 

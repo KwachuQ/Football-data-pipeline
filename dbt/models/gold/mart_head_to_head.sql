@@ -1,7 +1,7 @@
 {{ config(
     materialized='table',
-    post_hook=["CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_h2h_team1_team2 ON {{ this }}(team_id_1, team_id_2);",
-        "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_h2h_team2_team1 ON {{ this }}(team_id_2, team_id_1);"]
+    post_hook=["CREATE INDEX IF NOT EXISTS idx_h2h_team1_team2 ON {{ this }}(team_id_1, team_id_2);",
+        "CREATE INDEX IF NOT EXISTS idx_h2h_team2_team1 ON {{ this }}(team_id_2, team_id_1);"]
         ) 
         }}
 
