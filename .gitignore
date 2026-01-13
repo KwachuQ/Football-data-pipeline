@@ -10,3 +10,4 @@ tests/
 backup/
 aws_rds_snc/
 /dbt/target/
+.cache_ggshield
