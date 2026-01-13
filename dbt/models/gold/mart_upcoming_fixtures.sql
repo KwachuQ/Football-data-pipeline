@@ -1,4 +1,9 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    post_hook=[
+        "CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_fixtures_dates ON {{ this }}(start_timestamp);"]
+        ) 
+        }}
 
 with upcoming_fixtures as (
     select

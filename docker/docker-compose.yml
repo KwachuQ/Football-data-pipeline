@@ -63,6 +63,8 @@ services:
     environment:
       DBT_PROFILES_DIR: /opt/dbt/profiles
       DBT_PROJECT_DIR: /opt/dbt/project
+    ports:
+      - "8081:8081" 
     volumes:
       - ../dbt:/opt/dbt/project
       - dbt_profiles:/opt/dbt/profiles

@@ -1,6 +1,6 @@
 {{
   config(
-    enabled=true,
+    enabled=false,
     materialized='incremental',
     database='dwh',
     schema='bronze',

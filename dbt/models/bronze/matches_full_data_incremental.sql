@@ -1,6 +1,5 @@
 {{
   config(
-    enabled=false,
     materialized='incremental',
     alias='full_matches_data',
     unique_key='match_id',
