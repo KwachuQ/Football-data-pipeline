@@ -7,10 +7,11 @@ Usage: python content_explorer.py [date]
 import json
 import sys
 from datetime import datetime
+from typing import Dict, List, Any, Optional
 from minio import Minio
 import os
 
-def init_minio_client():
+def init_minio_client() -> Minio:
     """Initialize MinIO client"""
     return Minio(
         endpoint=os.getenv('MINIO_ENDPOINT', 'localhost:9000'),
@@ -19,7 +20,7 @@ def init_minio_client():
         secure=os.getenv('MINIO_SECURE', 'false').lower() == 'true'
     )
 
-def list_available_dates(client):
+def list_available_dates(client: Minio) -> List[str]:
     """List all available dates in bronze layer"""
     objects = client.list_objects('bronze-test', prefix='matches/', recursive=True)
     ndjson_files = [obj for obj in objects if obj.object_name.endswith('.ndjson')]
@@ -33,7 +34,7 @@ def list_available_dates(client):
     
     return sorted(list(dates), reverse=True)
 
-def read_matches_for_date(client, target_date):
+def read_matches_for_date(client: Minio, target_date: str) -> List[Dict[str, Any]]:
     """Read all matches for a specific date"""
     prefix = f"matches/tournament_id=8/season_id=77559/date={target_date}/"
     objects = client.list_objects('bronze-test', prefix=prefix, recursive=True)
@@ -54,7 +55,7 @@ def read_matches_for_date(client, target_date):
     
     return all_matches
 
-def analyze_match_structure(match):
+def analyze_match_structure(match: Dict[str, Any]) -> None:
     """Analyze the structure of a match record"""
     print("Match record structure:")
     print("=" * 50)
@@ -62,7 +63,7 @@ def analyze_match_structure(match):
     # Remove metadata for cleaner view
     clean_match = {k: v for k, v in match.items() if k != '_metadata'}
     
-    def print_structure(obj, level=0, max_level=2):
+    def print_structure(obj: Any, level: int = 0, max_level: int = 2) -> None:
         indent = "  " * level
         if level > max_level:
             return
@@ -84,7 +85,7 @@ def analyze_match_structure(match):
     
     print_structure(clean_match)
 
-def display_matches_summary(matches):
+def display_matches_summary(matches: List[Dict[str, Any]]) -> None:
     """Display a summary of matches"""
     print(f"\n Overview of {len(matches)} matches:")
     print("=" * 80)
@@ -111,7 +112,7 @@ def display_matches_summary(matches):
         print(f"{i:2d}. {time_str} | {home} vs {away}{score_str} [{status}]")
         print(f"     🏟️  {venue} |  Kolejka {round_info} | ID: {match.get('id', 'N/A')}")
 
-def display_full_match_json(match, index=0):
+def display_full_match_json(match: Dict[str, Any], index: int = 0) -> None:
     """Display full JSON of a match"""
     print(f"\n FULL JSON OF MATCH #{index + 1}:")
     print("=" * 80)
@@ -127,7 +128,7 @@ def display_full_match_json(match, index=0):
         for key, value in match['_metadata'].items():
             print(f"{key}: {value}")
 
-def main():
+def main() -> None:
     """Main exploration function"""
     client = init_minio_client()
     

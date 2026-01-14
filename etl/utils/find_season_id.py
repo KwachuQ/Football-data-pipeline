@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-async def find_seasons(league_id: int, league_name: str = "Unknown"):
+async def find_seasons(league_id: int, league_name: str = "Unknown") -> None:
     """
     Find all available seasons for a league
     
@@ -47,7 +47,7 @@ async def find_seasons(league_id: int, league_name: str = "Unknown"):
         logger.error(f"Error finding seasons: {e}", exc_info=True)
 
 
-async def main():
+async def main() -> None:
     """Find seasons for popular leagues"""
     
     leagues = [

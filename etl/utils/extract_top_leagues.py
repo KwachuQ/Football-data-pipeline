@@ -63,7 +63,7 @@ def get_leagues_for_country(country_id: int, api_key: str) -> List[Dict[str, Any
         print(f"Error getting leagues for country ID {country_id}: {e}")
         return []
 
-def extract_top_leagues():
+def extract_top_leagues() -> List[Dict[str, Any]]:
     """
     Extract first and second division leagues from target countries
     """
@@ -96,7 +96,7 @@ def extract_top_leagues():
     
     return all_leagues
 
-def create_leagues_md(leagues: List[Dict[str, Any]]):
+def create_leagues_md(leagues: List[Dict[str, Any]]) -> None:
     """
     Create markdown file with league information
     """
@@ -115,7 +115,7 @@ def create_leagues_md(leagues: List[Dict[str, Any]]):
     
     print(f"Created leagues_top_divisions.md with {len(leagues)} leagues")
 
-def create_detailed_json(leagues: List[Dict[str, Any]]):
+def create_detailed_json(leagues: List[Dict[str, Any]]) -> None:
     """
     Create detailed JSON file with all league information
     """
