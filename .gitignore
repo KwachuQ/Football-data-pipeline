@@ -2,6 +2,10 @@ __pycache__/
 *.pyc
 .env
 .env.local
+
+# Docker secrets (never commit!)
+docker/secrets/
+.env.local
 *.code-workspace
 dbt_packages/
 logs/

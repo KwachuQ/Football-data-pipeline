@@ -1,18 +1,48 @@
 #!/bin/bash
 
-# AWS RDS Connection Script
+# AWS RDS Connection Script (secrets-enabled)
 # Usage: ./connect_rds.sh [query]
 
 set -e  # Exit on error
 
 # ====================================
-# Configuration
+# Configuration from Secrets
 # ====================================
-DB_HOST="football-data-db.cdagem22a9jh.eu-north-1.rds.amazonaws.com"
+
+# Path to secrets (relative from script location)
+SCRIPT_DIR="$(dirname "$0")"
+SECRETS_DIR="${SCRIPT_DIR}/../docker/secrets"
+
+# Read secrets (with fallback for backward compatibility)
+read_secret() {
+    local secret_name=$1
+    local secret_file="${SECRETS_DIR}/${secret_name}.txt"
+    if [ -f "$secret_file" ]; then
+        cat "$secret_file" | tr -d '\n'
+    else
+        echo ""
+    fi
+}
+
+# Configuration from secrets
+DB_HOST=$(read_secret "aws_rds_host")
+DB_PASSWORD=$(read_secret "aws_rds_password")
+
+# Fallback to defaults if secrets not found (for backward compatibility)
+if [ -z "$DB_HOST" ]; then
+    echo "WARNING: aws_rds_host not found in secrets, using default"
+    DB_HOST="football-data-db.cdagem22a9jh.eu-north-1.rds.amazonaws.com"
+fi
+
 DB_PORT="5432"
 DB_NAME="dwh"
 DB_USER="airflow"
-DB_PASSWORD="hwp3!45LV^hhceHQhv^JB2"
+
+if [ -z "$DB_PASSWORD" ]; then
+    echo "ERROR: AWS RDS password not found in secrets!"
+    echo "Create: ${SECRETS_DIR}/aws_rds_password.txt"
+    exit 1
+fi
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -41,7 +71,7 @@ test_connection() {
         echo -e "${GREEN}✅ Connection successful!${NC}"
         
         # Show connection details
-        docker exec -i postgres psql "${CONN_STR}" -c "\conninfo"
+        docker exec -i postgres psql "${CONN_STR}" -c "\\conninfo"
         
         return 0
     else
@@ -67,8 +97,8 @@ run_query() {
 }
 
 show_help() {
-    cat << HELP
-AWS RDS Connection Script
+    cat <<HELP
+AWS RDS Connection Script (Secrets-Enabled)
 
 Usage:
   ./connect_rds.sh                     # Interactive mode
@@ -87,6 +117,7 @@ Connection details:
   Port: ${DB_PORT}
   Database: ${DB_NAME}
   User: ${DB_USER}
+  Password: (loaded from ${SECRETS_DIR}/aws_rds_password.txt)
 HELP
 }
 

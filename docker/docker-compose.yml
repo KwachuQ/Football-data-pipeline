@@ -4,14 +4,17 @@ services:
     container_name: postgres
     restart: always
     environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
+      POSTGRES_USER_FILE: /run/secrets/postgres_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
       POSTGRES_DB: dwh
     ports:
       - "5432:5432"
     volumes:
       - ../postgres/init:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
+    secrets:
+      - postgres_user
+      - postgres_password
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow", "-d", "dwh"]
       interval: 5s
@@ -23,14 +26,17 @@ services:
     container_name: minio
     restart: always
     environment:
-      MINIO_ROOT_USER: minio
-      MINIO_ROOT_PASSWORD: minio123
+      MINIO_ROOT_USER_FILE: /run/secrets/minio_root_user
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_root_password
     command: server /data --console-address ":9001"
     ports:
       - "9000:9000"
       - "9001:9001"     
     volumes:
       - minio_data:/data
+    secrets:
+      - minio_root_user
+      - minio_root_password
 
   metabase:
     image: metabase/metabase:latest
@@ -97,7 +103,6 @@ services:
       dockerfile: Dockerfile.etl
     container_name: etl_worker
     environment:
-      - RAPIDAPI_KEY=${RAPIDAPI_KEY}
       - RAPIDAPI_HOST=sofascore.p.rapidapi.com
       - MINIO_ENDPOINT=minio:9000
       - MINIO_ACCESS_KEY=minio
@@ -112,6 +117,8 @@ services:
     volumes:
       - ../etl:/opt/etl:ro
       - ../config:/opt/config:ro 
+    secrets:
+      - rapidapi_key
     depends_on:
       - minio
       - postgres
@@ -131,7 +138,7 @@ services:
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/dwh
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
-      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
+      # Fernet key and JWT secret are set by airflow-entrypoint.sh from secrets
       # Ograniczenie presji RAM w LocalExecutor
       AIRFLOW__CORE__PARALLELISM: "2"
       AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: "1"
@@ -141,13 +148,10 @@ services:
       AIRFLOW__PROVIDERS_AMAZON__S3_ENDPOINT_URL: "http://minio:9000"
       AIRFLOW__PROVIDERS_AMAZON__AWS_ACCESS_KEY_ID: "minio"
       AIRFLOW__PROVIDERS_AMAZON__AWS_SECRET_ACCESS_KEY: "minio123"
-      # RAPIDAPI – dostępne jednakowo w webserver/scheduler/processor/init
-      RAPIDAPI_KEY: ${RAPIDAPI_KEY}
-      RAPIDAPI_HOST: ${RAPIDAPI_HOST:-sofascore.p.rapidapi.com}
+      # RAPIDAPI – loaded by entrypoint from secret
+      RAPIDAPI_HOST: sofascore.p.rapidapi.com
       # Execution API configuration - fix for scheduler connection issues
       AIRFLOW__CORE__EXECUTION_API_SERVER_URL: "http://airflow_webserver:8080/execution/"
-      # JWT secret for API authentication (Airflow 3.0 format)
-      AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW__API_AUTH__JWT_SECRET}
     volumes:
       - ../airflow/dags:/opt/airflow/dags
       - ../airflow/logs:/opt/airflow/logs
@@ -155,6 +159,14 @@ services:
       - ../airflow/scripts:/opt/airflow/scripts
       - ../config:/opt/airflow/config
       - /var/run/docker.sock:/var/run/docker.sock
+    secrets:
+      - postgres_user
+      - postgres_password
+      - minio_root_user
+      - minio_root_password
+      - rapidapi_key
+      - airflow_fernet_key
+      - airflow_jwt_secret
     depends_on:
       postgres:
         condition: service_healthy
@@ -226,3 +238,19 @@ volumes:
   dbt_profiles:
   dbt_logs:
   etl_logs:
+
+secrets:
+  postgres_user:
+    file: ./secrets/postgres_user.txt
+  postgres_password:
+    file: ./secrets/postgres_password.txt
+  minio_root_user:
+    file: ./secrets/minio_root_user.txt
+  minio_root_password:
+    file: ./secrets/minio_root_password.txt
+  rapidapi_key:
+    file: ./secrets/rapidapi_key.txt
+  airflow_fernet_key:
+    file: ./secrets/airflow_fernet_key.txt
+  airflow_jwt_secret:
+    file: ./secrets/airflow_jwt_secret.txt
