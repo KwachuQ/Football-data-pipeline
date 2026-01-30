@@ -12,9 +12,9 @@ import time
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List, Union
 from urllib.parse import urljoin
-
+from pathlib import Path        
 import httpx
-from pydantic import BaseModel, ValidationError as PydanticValidationError, Field
+from pydantic import BaseModel, ValidationError as PydanticValidationError
 from tenacity import (
     retry,
     stop_after_attempt,
@@ -32,6 +32,20 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+def get_rapidapi_key() -> Optional[str]:
+    """Get RAPIDAPI_KEY from environment variable or Docker secret file."""
+    # First check environment variable
+    key = os.getenv('RAPIDAPI_KEY')
+    if key:
+        return key.strip()
+    
+    # Then check Docker secret file
+    secret_path = Path('/run/secrets/rapidapi_key')
+    if secret_path.exists():
+        return secret_path.read_text().strip()
+    
+    return None
 
 # ============================================================================
 # Exceptions
@@ -158,10 +172,11 @@ class SofascoreClient:
             timeout: Request timeout in seconds
             rate_limit_delay: Minimum delay between requests
         """
-        self.api_key = api_key or os.getenv('RAPIDAPI_KEY')
+        self.api_key = api_key or get_rapidapi_key()
         if not self.api_key:
             raise ValueError(
-                "RAPIDAPI_KEY required. Set via parameter or environment variable."
+                "RAPIDAPI_KEY required. Set via parameter, environment variable, "
+                "or Docker secret at /run/secrets/rapidapi_key."
             )
         
         self.timeout = timeout

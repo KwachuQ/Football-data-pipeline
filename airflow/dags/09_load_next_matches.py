@@ -501,14 +501,42 @@ def generate_report(**context):
     logging.info(f"{'='*70}\n")
 
 
+def refresh_gold_mart(**context):
+    """Refresh gold.mart_upcoming_fixtures using dbt"""
+    logging.info("Refreshing gold.mart_upcoming_fixtures via dbt...")
+    
+    command = 'docker exec dbt bash -c "cd /opt/dbt/project && dbt run --select mart_upcoming_fixtures --profiles-dir /opt/dbt/profiles"'
+    
+    try:
+        result = subprocess.run(
+            command,
+            shell=True,
+            capture_output=True,
+            text=True,
+            timeout=300
+        )
+        
+        logging.info(f"dbt stdout:\n{result.stdout}")
+        
+        if result.returncode != 0:
+            logging.error(f"dbt stderr:\n{result.stderr}")
+            raise AirflowFailException(f"dbt refresh failed with exit code {result.returncode}")
+        
+        logging.info("✓ gold.mart_upcoming_fixtures refreshed successfully")
+        return {"status": "success"}
+        
+    except subprocess.TimeoutExpired:
+        raise AirflowFailException("dbt refresh timeout (5 min)")
+
+
 with DAG(
     dag_id='09_load_upcoming_fixtures',
     default_args=default_args,
-    description='Load upcoming matches from MinIO (bronze) → unpack to silver → prepare for gold',
-    schedule=None,
+    description='Load upcoming matches from MinIO (bronze) → unpack to silver → refresh gold mart',
+    schedule=None,  # Triggered by 00_incremental_pipeline_orchestrator
     catchup=False,
     max_active_runs=1,
-    tags=['bronze', 'silver', 'upcoming', 'fixtures', 'next-matches']
+    tags=['bronze', 'silver', 'gold', 'upcoming', 'fixtures', 'next-matches']
 ) as dag:
     
     start = EmptyOperator(task_id='start')
@@ -540,6 +568,12 @@ with DAG(
         python_callable=verify_silver_table
     )
     
+    refresh_gold = PythonOperator(
+        task_id='refresh_gold_mart',
+        python_callable=refresh_gold_mart,
+        execution_timeout=timedelta(minutes=10)
+    )
+    
     report = PythonOperator(
         task_id='generate_report',
         python_callable=generate_report
@@ -548,4 +582,4 @@ with DAG(
     end = EmptyOperator(task_id='end')
     
     # Task dependencies
-    start >> ensure_bronze >> load_bronze >> verify_bronze >> create_silver >> verify_silver >> report >> end
+    start >> ensure_bronze >> load_bronze >> verify_bronze >> create_silver >> verify_silver >> refresh_gold >> report >> end

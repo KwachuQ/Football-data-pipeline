@@ -91,7 +91,7 @@ with DAG(
     '08_bronze_extract_next_matches',
     default_args=default_args,
     description='Extract next matches for tournament',
-    schedule=None, 
+    schedule=None,  # Triggered by 00_incremental_pipeline_orchestrator
     catchup=False,
     tags=['bronze', 'next_matches', 'extraction'],
 ) as dag:

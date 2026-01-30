@@ -106,7 +106,31 @@ with DAG(
         failed_states=['failed']
     )
     
+    # Step 8: Extract upcoming fixtures from API → MinIO
+    extract_upcoming = TriggerDagRunOperator(
+        task_id='extract_upcoming_fixtures',
+        trigger_dag_id='08_bronze_extract_next_matches',
+        wait_for_completion=True,
+        poke_interval=30,
+        reset_dag_run=True,
+        allowed_states=['success'],
+        failed_states=['failed']
+    )
+    
+    # Step 9: Load upcoming fixtures MinIO → Silver → Gold
+    load_upcoming = TriggerDagRunOperator(
+        task_id='load_upcoming_fixtures',
+        trigger_dag_id='09_load_upcoming_fixtures',
+        wait_for_completion=True,
+        poke_interval=30,
+        reset_dag_run=True,
+        allowed_states=['success'],
+        failed_states=['failed']
+    )
+    
     end = EmptyOperator(task_id='end')
     
     # Pipeline dependencies
-    start >> extract_matches >> load_matches >> extract_stats >> load_stats >> stage_silver >> dbt_silver >> dbt_gold >> end
+    # Main pipeline: extract → load → stats → silver → gold
+    # Then upcoming fixtures in parallel after gold transforms
+    start >> extract_matches >> load_matches >> extract_stats >> load_stats >> stage_silver >> dbt_silver >> dbt_gold >> extract_upcoming >> load_upcoming >> end
