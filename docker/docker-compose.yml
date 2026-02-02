@@ -117,6 +117,8 @@ services:
     volumes:
       - ../etl:/opt/etl:ro
       - ../config:/opt/config:ro 
+      - ../var:/opt/var
+      - ../tests:/opt/tests
     secrets:
       - rapidapi_key
     depends_on:
