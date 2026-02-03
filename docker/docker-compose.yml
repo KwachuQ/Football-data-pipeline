@@ -161,6 +161,7 @@ services:
       - ../airflow/scripts:/opt/airflow/scripts
       - ../config:/opt/airflow/config
       - /var/run/docker.sock:/var/run/docker.sock
+      - ../var:/opt/var
     secrets:
       - postgres_user
       - postgres_password
