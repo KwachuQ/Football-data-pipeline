@@ -9,19 +9,6 @@
 
 End-to-end data pipeline for ingesting, modeling and serving Ekstraklasa football data from the [SofaScore API](https://rapidapi.com/apidojo/api/sofascore) using a medallion architecture (Bronze → Silver → Gold). Orchestrated with Airflow, stored in MinIO/PostgreSQL, transformed via dbt, and ready for BI (Metabase).
 
-## Project Status
-
-🟢 **Active Development** - Pipeline is fully functional for Ekstraklasa and ready for other European leagues.
-
-| Feature | Status |
-|---------|--------|
-| Historical data extraction | ✅ Complete |
-| Incremental updates | ✅ Complete |
-| dbt transformations | ✅ Complete |
-| Metabase integration | ✅ Complete |
-| Next matches prediction | ✅ Complete |
-| Multi-league support | ✅ 20+ leagues configured |
-
 ## Contents
 
 - [General Info](#general-info)
