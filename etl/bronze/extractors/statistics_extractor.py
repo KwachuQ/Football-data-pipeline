@@ -21,6 +21,7 @@ from tenacity import (
     wait_exponential,
     retry_if_exception_type
 )
+from etl.utils.api_usage_tracker import tracker
 
 logger = logging.getLogger(__name__)
 
@@ -183,9 +184,18 @@ class StatisticsFetcher:
                 timeout=30
             )
             
+            # Track API call
+            tracker.track_request(
+                endpoint=self.API_ENDPOINT,
+                method="GET",
+                status_code=response.status_code,
+                dag_id=os.getenv('AIRFLOW_CTX_DAG_ID'),
+                task_id=os.getenv('AIRFLOW_CTX_TASK_ID')
+            )
+
             if response.status_code == 200:
                 data = response.json()
-                logger.info(f"✓ Fetched statistics for match_id={match_id}")
+                logger.info(f"Fetched statistics for match_id={match_id}")
                 return {
                     'match_id': match_id,
                     'status': 'success',
@@ -193,7 +203,7 @@ class StatisticsFetcher:
                 }
             
             elif response.status_code == 404:
-                logger.warning(f"⚠ No statistics available for match_id={match_id}")
+                logger.warning(f"No statistics available for match_id={match_id}")
                 return {
                     'match_id': match_id,
                     'status': 'not_found',
@@ -203,7 +213,7 @@ class StatisticsFetcher:
             else:
                 error_msg = f"HTTP {response.status_code}: {response.text[:200]}"
                 logger.error(
-                    f"✗ Failed to fetch match_id={match_id}: {error_msg}",
+                    f"Failed to fetch match_id={match_id}: {error_msg}",
                     extra={
                         "match_id": match_id,
                         "status_code": response.status_code,
@@ -218,18 +228,32 @@ class StatisticsFetcher:
                 }
         
         except requests.exceptions.Timeout:
-            logger.warning(f"⏱ Timeout fetching match_id={match_id}")
+            logger.warning(f"Timeout fetching match_id={match_id}")
+            tracker.track_request(
+                endpoint=self.API_ENDPOINT,
+                method="GET",
+                status_code=408,  # 408 = Request Timeout
+                dag_id=os.getenv('AIRFLOW_CTX_DAG_ID'),
+                task_id=os.getenv('AIRFLOW_CTX_TASK_ID')
+            )
             return {
                 'match_id': match_id,
                 'status': 'timeout',
                 'data': None,
                 'error': 'Request timeout'
             }
-        
+            
         except requests.exceptions.RequestException as e:
             logger.error(
-                f"✗ Request error for match_id={match_id}: {type(e).__name__}: {e}",
+                f"Request error for match_id={match_id}: {type(e).__name__}: {e}",
                 exc_info=True
+            )
+            tracker.track_request(
+                endpoint=self.API_ENDPOINT,
+                method="GET",
+                status_code=500,  # 500 = Internal Server Error
+                dag_id=os.getenv('AIRFLOW_CTX_DAG_ID'),
+                task_id=os.getenv('AIRFLOW_CTX_TASK_ID')
             )
             return {
                 'match_id': match_id,

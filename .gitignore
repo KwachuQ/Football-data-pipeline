@@ -12,6 +12,9 @@ logs/
 tests/__pycache__/
 tests/
 backup/
-aws_rds_snc/
 /dbt/target/
 .cache_ggshield
+.devcontainer/
+data/
+aws_rds_sync/*.sql
+aws_rds_sync/*.tmp

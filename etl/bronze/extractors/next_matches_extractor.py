@@ -20,6 +20,7 @@ from tenacity import (
     wait_exponential,
     retry_if_exception_type
 )
+from etl.utils.api_usage_tracker import tracker
 
 logger = logging.getLogger(__name__)
 
@@ -134,11 +135,20 @@ class NextMatchesFetcher:
                 params=params,
                 timeout=30
             )
-            
+
+            # Track API call
+            tracker.track_request(
+                endpoint=self.API_ENDPOINT,
+                method="GET",
+                status_code=response.status_code,
+                dag_id=os.getenv('AIRFLOW_CTX_DAG_ID'),
+                task_id=os.getenv('AIRFLOW_CTX_TASK_ID')
+            )
+
             if response.status_code == 200:
                 data = response.json()
                 logger.info(
-                    f"✓ Fetched next matches page {page_index} "
+                    f"Fetched next matches page {page_index} "
                     f"(tournament_id={self.tournament_id})"
                 )
                 return {
@@ -150,7 +160,7 @@ class NextMatchesFetcher:
                 }
             elif response.status_code == 404:
                 logger.warning(
-                    f"⚠ No next matches available for page {page_index}"
+                    f"No next matches available for page {page_index}"
                 )
                 return {
                     'tournament_id': self.tournament_id,
@@ -162,7 +172,7 @@ class NextMatchesFetcher:
                 }
             else:
                 error_msg = f"HTTP {response.status_code}: {response.text[:200]}"
-                logger.error(f"✗ Error fetching next matches: {error_msg}")
+                logger.error(f"Error fetching next matches: {error_msg}")
                 return {
                     'tournament_id': self.tournament_id,
                     'season_id': self.season_id,
@@ -173,7 +183,14 @@ class NextMatchesFetcher:
                 }
                 
         except requests.Timeout:
-            logger.error(f"⏱ Timeout fetching next matches page {page_index}")
+            logger.error(f"Timeout fetching next matches page {page_index}")
+            tracker.track_request(
+                endpoint=self.API_ENDPOINT,
+                method="GET",
+                status_code=408,
+                dag_id=os.getenv('AIRFLOW_CTX_DAG_ID'),
+                task_id=os.getenv('AIRFLOW_CTX_TASK_ID')
+            )
             return {
                 'tournament_id': self.tournament_id,
                 'season_id': self.season_id,
@@ -183,7 +200,14 @@ class NextMatchesFetcher:
                 'error': 'Request timeout'
             }
         except Exception as e:
-            logger.error(f"✗ Unexpected error: {str(e)}")
+            logger.error(f"Unexpected error: {str(e)}")
+            tracker.track_request(
+                endpoint=self.API_ENDPOINT,
+                method="GET",
+                status_code=408,
+                dag_id=os.getenv('AIRFLOW_CTX_DAG_ID'),
+                task_id=os.getenv('AIRFLOW_CTX_TASK_ID')
+            )
             return {
                 'tournament_id': self.tournament_id,
                 'season_id': self.season_id,
